@@ -4,7 +4,7 @@
 >
 > 一份基于 Antonio Gulli《Agentic Design Patterns》的 **8 周自学门户**——包含每章深度中文摘要、直达原文链接、每周阅读清单、40+ 道自测题、8 个动手项目和综合 capstone。
 
-🔗 **Live demo:** _<填上你部署后的 URL，如 `https://creole12138.github.io/agentic-design-patterns-8-week-portal/`>_
+🔗 **Live demo:** [Netlify](https://agentic-design-patterns-guide.netlify.app/) · [GitHub Pages](https://creole12138.github.io/agentic-design-patterns-guide/)
 
 ---
 
@@ -17,7 +17,7 @@
 - **40+ quizzes** — Click for instant correct/wrong feedback + detailed explanations
 - **Local progress tracking** — `localStorage`-based, no backend required
 - **Pure single-file HTML** — Open it locally, host it anywhere; no build step, no dependencies
-- **Dark theme, responsive, sticky right sidebar** — Polished UX for desktop + mobile
+- **Light/Dark theme toggle, responsive, sticky right sidebar** — Polished UX for desktop + mobile
 
 ---
 
@@ -43,15 +43,15 @@ Recommended pace: **5-7 hours/week**, weekday reading + weekend coding.
 ### Option 1 — Open Locally
 
 ```bash
-git clone https://github.com/creole12138/<repo-name>.git
-cd <repo-name>
+git clone https://github.com/creole12138/agentic-design-patterns-guide.git
+cd agentic-design-patterns-guide
 open index.html       # macOS
 # or just double-click index.html in your file manager
 ```
 
 ### Option 2 — Visit Live Demo
 
-Go to the **Live demo** URL above (once deployed).
+Visit the Netlify live site: <https://agentic-design-patterns-guide.netlify.app/>
 
 ### Option 3 — Self-Host
 
@@ -68,6 +68,8 @@ Drop `index.html` into any static host — Netlify Drop, Cloudflare Pages, Verce
 ```
 
 That's it. No build, no dependencies, no backend.
+
+Repository: <https://github.com/creole12138/agentic-design-patterns-guide>
 
 ---
 
