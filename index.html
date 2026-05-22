@@ -1,0 +1,2370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agentic Design Patterns · 8 周深度学习门户</title>
+<meta name="description" content="A self-paced 8-week study portal for Antonio Gulli's Agentic Design Patterns, with hands-on projects and quizzes.">
+<style>
+  :root {
+    --bg:#0b0e11; --bg-2:#11151b; --bg-3:#1a1f27; --bg-card:#161b22;
+    --border:#262d36; --border-light:#333c47;
+    --text:#e6e8eb; --text-2:#9aa4b2; --text-3:#6b7684;
+    --accent:#f7a600; --accent-2:#ffcc33; --accent-soft:rgba(247,166,0,0.12);
+    --green:#1fc16b; --blue:#3a8fff; --red:#ff5c5c; --purple:#a76dff;
+    --radius:10px; --radius-sm:6px;
+  }
+  * { box-sizing:border-box; }
+  html,body { background:var(--bg); color:var(--text); margin:0; padding:0;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height:1.65; font-size:15px; }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { color:var(--accent-2); text-decoration:underline; }
+  code { background:var(--bg-3); padding:2px 6px; border-radius:4px; font-size:0.9em; color:var(--accent-2); font-family: "JetBrains Mono","SF Mono",Menlo,Consolas,monospace; }
+  pre { background:var(--bg-3); border:1px solid var(--border); border-radius:var(--radius-sm); padding:14px 16px; overflow:auto; font-size:13px; }
+  pre code { background:transparent; padding:0; color:var(--text); }
+
+  .container { max-width:1180px; margin:0 auto; padding:32px 28px 80px; }
+  header.hero { background:linear-gradient(135deg, #11151b 0%, #1a1f27 100%); border:1px solid var(--border); border-radius:14px; padding:34px 36px; margin-bottom:28px; position:relative; overflow:hidden;}
+  header.hero::before { content:""; position:absolute; right:-60px; top:-60px; width:240px; height:240px; background:radial-gradient(circle, var(--accent-soft) 0%, transparent 70%); }
+  .tag { display:inline-block; background:var(--accent-soft); color:var(--accent); padding:4px 10px; border-radius:99px; font-size:12px; font-weight:600; letter-spacing:.5px; margin-bottom:12px;}
+  h1.title { font-size:30px; margin:0 0 6px 0; font-weight:700; letter-spacing:-.5px; }
+  h1.title span.sub { color:var(--text-2); font-size:18px; font-weight:400; display:block; margin-top:4px;}
+  .meta { display:flex; flex-wrap:wrap; gap:18px; margin-top:18px; color:var(--text-2); font-size:13px; }
+  .meta span b { color:var(--text); font-weight:600; }
+  .byline { margin-top:14px; padding:8px 14px; display:inline-block; background:var(--bg-3); border:1px solid var(--border); border-radius:99px; font-size:12.5px; color:var(--text-2); position:relative; z-index:1; transition:all .15s;}
+  .byline a { color:var(--accent); text-decoration:none; transition:all .15s;}
+  .byline a b { font-weight:700; letter-spacing:0.3px;}
+  .byline:hover { border-color:var(--accent); background:var(--accent-soft);}
+  .byline:hover a { color:var(--accent-2); text-decoration:none;}
+
+  .progress-wrap { margin:22px 0 0 0; }
+  .progress-wrap.progress-above-tabs { margin:0 0 16px 0; padding:16px 20px; background:var(--bg-card); border:1px solid var(--border); border-radius:12px;}
+  .progress-bar { height:8px; background:var(--bg-3); border-radius:99px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg, var(--accent), var(--accent-2)); width:0%; transition:width .4s ease;}
+  .progress-text { font-size:13px; color:var(--text-2); margin-top:8px; display:flex; justify-content:space-between;}
+
+  .week-tabs { display:grid; grid-template-columns:repeat(8, 1fr); gap:8px; margin-bottom:24px; }
+  @media (max-width:1024px){ .week-tabs { grid-template-columns:repeat(4, 1fr);} }
+  @media (max-width:540px){ .week-tabs { grid-template-columns:repeat(2, 1fr);} }
+  .week-tab { padding:12px 10px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius);
+    color:var(--text-2); cursor:pointer; transition:all .15s; user-select:none;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center; min-height:64px; position:relative;}
+  .week-tab .wk-num { font-size:11px; font-weight:600; color:var(--text-3); letter-spacing:0.5px; text-transform:uppercase;}
+  .week-tab .wk-theme { font-size:13px; font-weight:600; line-height:1.3;}
+  .week-tab:hover { border-color:var(--accent); color:var(--text); transform:translateY(-1px);}
+  .week-tab:hover .wk-num { color:var(--text-2);}
+  .week-tab.active { background:var(--accent-soft); border-color:var(--accent); color:var(--accent);}
+  .week-tab.active .wk-num { color:var(--accent); opacity:0.85;}
+  .week-tab.done { border-color:rgba(31,193,107,0.35);}
+  .week-tab.done::after { content:"✓"; position:absolute; top:5px; right:7px; color:var(--green); font-weight:700; font-size:11px;}
+  .week-tab.active.done { border-color:var(--accent);}
+
+  .section { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:28px 30px; margin-bottom:24px;}
+  .section h2 { margin:0 0 6px 0; font-size:22px; font-weight:700; letter-spacing:-.3px;}
+  .section h2 .num { color:var(--accent); margin-right:8px;}
+  .section .desc { color:var(--text-2); margin:0 0 22px 0; font-size:14px;}
+  .section h3 { font-size:16px; margin:24px 0 10px 0; font-weight:700; color:var(--text); display:flex; align-items:center; gap:8px;}
+  .section h3 .icon { width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; background:var(--accent-soft); color:var(--accent); border-radius:6px; font-size:13px; font-weight:700;}
+
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .grid-3 { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
+  @media (max-width:760px){ .grid-2,.grid-3 { grid-template-columns:1fr; } }
+  .mini-card { background:var(--bg-2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px;}
+  .mini-card b { color:var(--text); display:block; margin-bottom:4px; font-size:14px;}
+  .mini-card p { margin:0; font-size:13px; color:var(--text-2); line-height:1.55;}
+
+  .checklist { list-style:none; padding:0; margin:8px 0;}
+  .checklist li { padding:8px 0; display:flex; align-items:flex-start; gap:10px; border-bottom:1px solid var(--border); cursor:pointer;}
+  .checklist li:last-child { border-bottom:none;}
+  .checklist input[type=checkbox] { margin-top:4px; accent-color: var(--accent); width:16px; height:16px; cursor:pointer; flex-shrink:0;}
+  .checklist label { cursor:pointer; font-size:14px; flex:1;}
+  .checklist li.done label { text-decoration:line-through; color:var(--text-3);}
+
+  .quiz { background:var(--bg-2); border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px; margin:10px 0;}
+  .quiz .q { font-weight:600; margin-bottom:10px; font-size:14px;}
+  .quiz .q .qnum { color:var(--accent); margin-right:6px;}
+  .quiz .options { list-style:none; padding:0; margin:0 0 12px 0;}
+  .quiz .options li { padding:8px 12px; border:1px solid var(--border); border-radius:6px; margin-bottom:6px; cursor:pointer; font-size:13.5px; transition:all .15s;}
+  .quiz .options li:hover { border-color:var(--accent); background:var(--accent-soft);}
+  .quiz .options li.correct { background:rgba(31,193,107,0.12); border-color:var(--green); color:var(--green);}
+  .quiz .options li.wrong { background:rgba(255,92,92,0.12); border-color:var(--red); color:var(--red);}
+  .quiz .answer-btn { background:transparent; border:1px solid var(--border-light); color:var(--text-2); padding:6px 12px; border-radius:6px; font-size:12px; cursor:pointer;}
+  .quiz .answer-btn:hover { color:var(--accent); border-color:var(--accent);}
+  .quiz .explain { display:none; margin-top:10px; padding:10px 12px; background:var(--bg-3); border-left:3px solid var(--accent); border-radius:4px; font-size:13px; color:var(--text-2);}
+  .quiz .explain.show { display:block;}
+  .quiz .explain b { color:var(--accent);}
+
+  details.concept { border:1px solid var(--border); border-radius:var(--radius); padding:0; margin-bottom:10px; background:var(--bg-2); overflow:hidden;}
+  details.concept summary { padding:14px 18px; cursor:pointer; font-weight:600; font-size:14.5px; list-style:none; display:flex; align-items:center; gap:10px;}
+  details.concept summary::-webkit-details-marker { display:none;}
+  details.concept summary::before { content:"▸"; color:var(--accent); transition:transform .2s; display:inline-block;}
+  details.concept[open] summary::before { transform:rotate(90deg);}
+  details.concept .body { padding:0 18px 16px 36px; font-size:13.5px; color:var(--text-2); line-height:1.7;}
+  details.concept .body b { color:var(--text);}
+
+  .handson { background:linear-gradient(135deg, rgba(247,166,0,0.05) 0%, rgba(167,109,255,0.05) 100%);
+    border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:var(--radius); padding:18px 20px; margin:10px 0;}
+  .handson b.title { color:var(--accent); font-size:14px; display:block; margin-bottom:6px;}
+  .handson p { margin:0 0 8px 0; font-size:13.5px;}
+  .handson .stack { font-size:12px; color:var(--text-3); margin-top:8px;}
+  .handson .stack span { display:inline-block; background:var(--bg-3); padding:2px 8px; border-radius:4px; margin-right:6px;}
+
+  .tip { background:rgba(58,143,255,0.06); border:1px solid rgba(58,143,255,0.25); border-left:3px solid var(--blue); padding:12px 16px; border-radius:6px; margin:10px 0; font-size:13.5px; color:var(--text-2);}
+  .tip b { color:var(--blue); }
+
+  /* Reading source card */
+  .source { background:linear-gradient(135deg, rgba(58,143,255,0.04) 0%, rgba(31,193,107,0.04) 100%);
+    border:1px solid var(--border); border-left:4px solid var(--blue); border-radius:var(--radius); padding:16px 20px; margin:10px 0;}
+  .source b.ch { color:var(--blue); font-size:13px; font-weight:700; display:block; margin-bottom:6px;}
+  .source .anchor { font-size:12.5px; color:var(--text-3); margin:6px 0;}
+  .source .anchor code { background:var(--bg-3); padding:1px 6px;}
+  .source .summary { font-size:13.5px; color:var(--text-2); line-height:1.7; margin:8px 0 4px 0;}
+  .source .summary b { color:var(--text);}
+  .source .links { font-size:12px; margin-top:8px;}
+  .source .links a { margin-right:14px;}
+
+  .pills { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;}
+  .pill { background:var(--bg-3); border:1px solid var(--border); padding:5px 12px; border-radius:99px; font-size:12.5px; color:var(--text);}
+  .pill a { color:var(--text);}
+
+  .week-content { display:none;}
+  .week-content.active { display:block;}
+
+  .toc-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:10px; margin-top:14px;}
+  .toc-item { background:var(--bg-2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 14px; font-size:13px; transition:all .15s;}
+  .toc-item:hover { border-color:var(--accent); background:var(--accent-soft);}
+  .toc-item .ch { color:var(--accent); font-weight:700; margin-right:6px;}
+
+  footer { text-align:center; color:var(--text-3); font-size:12px; padding:30px 0 10px;}
+
+  .reset-btn { background:transparent; border:1px solid var(--border-light); color:var(--text-3); padding:5px 12px; border-radius:6px; font-size:12px; cursor:pointer; margin-left:8px;}
+  .reset-btn:hover { color:var(--red); border-color:var(--red);}
+
+  /* Deep summary collapsible (Ch15) */
+  details.deep-summary { border:1px solid var(--border); border-left:4px solid var(--green); border-radius:var(--radius); margin:10px 0; background:linear-gradient(135deg, rgba(31,193,107,0.04) 0%, rgba(58,143,255,0.04) 100%); overflow:hidden;}
+  details.deep-summary summary { padding:12px 18px; cursor:pointer; font-weight:600; font-size:14px; color:var(--green); list-style:none; display:flex; align-items:center; gap:10px;}
+  details.deep-summary summary::-webkit-details-marker { display:none;}
+  details.deep-summary summary::before { content:"▸"; color:var(--green); transition:transform .2s; display:inline-block;}
+  details.deep-summary[open] summary::before { transform:rotate(90deg);}
+  details.deep-summary .deep-summary-body { padding:0 22px 18px 22px; font-size:13.5px; line-height:1.75; color:var(--text); border-top:1px solid var(--border);}
+  details.deep-summary .deep-summary-body h4 { font-size:14px; margin:16px 0 8px 0; color:var(--accent); font-weight:700;}
+  details.deep-summary .deep-summary-body h4:first-child { margin-top:14px;}
+  details.deep-summary .deep-summary-body p { margin:6px 0 8px 0; color:var(--text-2);}
+  details.deep-summary .deep-summary-body p b { color:var(--text);}
+  details.deep-summary .deep-summary-body ul { margin:6px 0 8px 0; padding-left:22px; color:var(--text-2);}
+  details.deep-summary .deep-summary-body ul li { margin:4px 0;}
+  details.deep-summary .deep-summary-body ul b { color:var(--text);}
+  details.deep-summary .deep-summary-body ol { margin:6px 0 8px 0; padding-left:22px; color:var(--text-2);}
+  details.deep-summary .deep-summary-body pre { background:var(--bg-3); border:1px solid var(--border); border-radius:6px; padding:10px; margin:8px 0; font-size:12px;}
+
+
+  /* 2-column layout: main + sticky sidebar */
+  .layout-grid { display:grid; grid-template-columns: minmax(0, 1fr) 340px; gap:24px; align-items:start; margin-bottom:24px;}
+  @media (max-width: 980px){ .layout-grid { grid-template-columns: 1fr; } }
+  .main-col { min-width:0;}
+  .sidebar { position:sticky; top:16px; max-height:calc(100vh - 32px); display:flex; flex-direction:column; gap:14px; overflow:hidden;}
+  @media (max-width: 980px){ .sidebar { position:static; max-height:none;} }
+  .sidebar-card { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:18px 18px 14px 18px; display:flex; flex-direction:column; min-height:0;}
+  .sidebar-card h3.sb-title { font-size:13px; margin:0 0 12px 0; font-weight:700; color:var(--text); display:flex; align-items:center; gap:8px; letter-spacing:0.3px;}
+  .sidebar-card h3.sb-title .icon { width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; background:var(--accent-soft); color:var(--accent); border-radius:6px; font-size:13px; font-weight:700;}
+  .sidebar-card.sb-toc { flex:1; min-height:0;}
+  .sidebar-card.sb-toc .toc-list { overflow-y:auto; flex:1; margin:0 -8px; padding:0 8px;}
+  .sidebar-card.sb-toc .toc-list a.toc-link { display:flex; align-items:baseline; gap:8px; padding:7px 10px; border-radius:6px; font-size:12.5px; color:var(--text-2); text-decoration:none; transition:all .15s; border:1px solid transparent;}
+  .sidebar-card.sb-toc .toc-list a.toc-link:hover { background:var(--accent-soft); color:var(--text); border-color:var(--accent); text-decoration:none;}
+  .sidebar-card.sb-toc .toc-list a.toc-link .ch { color:var(--accent); font-weight:700; min-width:38px; flex-shrink:0; font-size:11.5px;}
+  .sidebar-card.sb-toc .toc-list a.toc-link .ext { margin-left:auto; opacity:0.4; font-size:10px;}
+  .sidebar-card.sb-toc .toc-list a.toc-link:hover .ext { opacity:1;}
+  .sidebar-card.sb-checklist { max-height:340px; display:flex; flex-direction:column;}
+  .sidebar-card.sb-checklist .sb-checklist-body { overflow-y:auto; flex:1; margin:0 -4px; padding:0 4px;}
+  .sidebar-checklist { display:none;}
+  .sidebar-checklist.active { display:block;}
+  .sidebar-checklist .checklist li { font-size:12.5px; padding:6px 0;}
+  .sidebar-checklist .checklist label { font-size:12.5px;}
+  /* scrollbar styling for sidebar lists */
+  .sidebar-card *::-webkit-scrollbar { width:6px;}
+  .sidebar-card *::-webkit-scrollbar-track { background:transparent;}
+  .sidebar-card *::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px;}
+  .sidebar-card *::-webkit-scrollbar-thumb:hover { background:var(--border-light);}
+
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HERO -->
+<header class="hero">
+  <span class="tag">8 周深度学习计划 · 动手构建 Agent</span>
+  <h1 class="title">Agentic Design Patterns
+    <span class="sub">A Hands-On Guide to Building Intelligent Systems · Antonio Gulli</span>
+  </h1>
+  <div class="meta">
+    <span><b>21 章</b> + 7 附录</span>
+    <span>424 页 · 作者免费开源</span>
+    <span>原书作者：Antonio Gulli (Google Office of CTO Sr. Director)</span>
+    <span>所有版税捐赠给 Save the Children</span>
+  </div>
+  <div class="byline">本学习门户整理：<a href="https://github.com/creole12138?tab=repositories" target="_blank" rel="noopener noreferrer"><b>Creole12138</b> ↗</a></div>
+</header>
+
+<!-- RESOURCES -->
+<div class="section">
+  <h2><span class="num">📚</span>核心学习资源（先收藏）</h2>
+  <p class="desc">原书 + 配套代码 + 速查卡，按以下顺序使用效率最高。</p>
+  <div class="grid-2">
+    <div class="mini-card">
+      <b>① 原书完整 PDF（社区镜像，可下载）</b>
+      <p><a href="https://github.com/evoiz/Agentic-Design-Patterns/blob/main/Agentic_Design_Patterns_Complete.pdf" target="_blank" rel="noopener noreferrer">github.com/evoiz/.../Agentic_Design_Patterns_Complete.pdf</a><br/>482 页全本 PDF，可离线阅读 / 打印 / 检索。本门户的"原文定位"直接链到各章独立 Google Doc。</p>
+    </div>
+    <div class="mini-card">
+      <b>② 配套代码官方 Drive 文件夹</b>
+      <p><a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">drive.google.com/.../1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV</a><br/>作者维护的 Colab notebook 集合，21 章代码示例都在这里。</p>
+    </div>
+    <div class="mini-card">
+      <b>③ 21 模式速查卡 + 多框架代码（社区整理）</b>
+      <p><a href="https://github.com/ColtMercer/agentic-design-patterns" target="_blank" rel="noopener noreferrer">github.com/ColtMercer/agentic-design-patterns</a><br/>LangChain / LangGraph / CrewAI / Google ADK 对照实现，作为补充参考。</p>
+    </div>
+    <div class="mini-card">
+      <b>④ Springer 正式出版页（含 ISBN 引用）</b>
+      <p><a href="https://link.springer.com/book/10.1007/978-3-032-01402-3" target="_blank" rel="noopener noreferrer">link.springer.com/.../978-3-032-01402-3</a><br/>正式引用、勘误、读者评价。所有版税捐赠给 Save the Children。</p>
+    </div>
+    <div class="mini-card">
+      <b>⑤ 作者 LinkedIn（追更新 + 提问）</b>
+      <p><a href="https://www.linkedin.com/in/searchguy/" target="_blank" rel="noopener noreferrer">linkedin.com/in/searchguy</a><br/>Antonio Gulli 经常发新的 pattern 草稿和案例。</p>
+    </div>
+  </div>
+</div>
+
+<!-- HOW TO USE -->
+<div class="section">
+  <h2><span class="num">🧭</span>怎么用这份学习门户</h2>
+  <p class="desc">每周一个面板，按以下 5 步循环。</p>
+  <div class="grid-3">
+    <div class="mini-card"><b>① 读原文 (60-90 min)</b><p>用本周"原文定位"区跳转到 Google Doc 对应章节，圈出 3 个最关键的术语。</p></div>
+    <div class="mini-card"><b>② 跑配套代码 (45 min)</b><p>章节卡里的"配套代码"链接：Ch1 是 Colab Notebook 可一键运行；Ch2-21 在作者维护的 Drive 文件夹里。改一处参数看输出变化。</p></div>
+    <div class="mini-card"><b>③ 做 Hands-on (90 min)</b><p>本周"动手项目"自己实现一遍。</p></div>
+    <div class="mini-card"><b>④ 测自己 (20 min)</b><p>完成本周自测题，错的回去重读相应小节。</p></div>
+    <div class="mini-card"><b>⑤ 写学习笔记 (30 min)</b><p>用自己的话写"这个模式什么时候用、不该用"。</p></div>
+    <div class="mini-card"><b>⑥ 勾选 checklist</b><p>本页面会自动保存进度（仅在本机浏览器）。</p></div>
+  </div>
+  <div class="tip"><b>建议节奏：</b> 周一 ~ 周三读 + 跑 notebook，周四 ~ 周六做 hands-on，周日总结 + 测验。每周 5-7 小时投入。</div>
+  <div class="tip"><b>📖 每章带 PDF 深度摘要：</b> 21 个章节卡片下都新增了"展开本章深度摘要"折叠区——基于 PDF 实际内容写的中文学习笔记（每章 800-1200 字），包含：核心机制、实战要点、易错点、与其他章节的关系。可作为读原文前的"预读"或读后的"复习提纲"。</div>
+  <div class="tip"><b>💡 一键直达章节：</b> 每周"原文定位"区的链接<b>直接指向作者维护的各章独立 Google Doc</b>（从原书 PDF 第一页提取，由 Antonio Gulli 本人维护）。点击立刻打开对应章节的原文，无需 Ctrl+F。</div>
+</div>
+
+<div class="layout-grid">
+<div class="main-col">
+<!-- PROGRESS BAR (above week tabs) -->
+<div class="progress-wrap progress-above-tabs">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-text"><span id="progressText">0 / 0 项完成</span>
+    <span>进度本地保存（localStorage，浏览器独立） · <button class="reset-btn" onclick="resetProgress()">重置</button></span>
+  </div>
+</div>
+
+<!-- WEEK TABS -->
+<div class="week-tabs" id="weekTabs">
+  <div class="week-tab active" data-week="1"><span class="wk-num">Week 1</span><span class="wk-theme">基础 + 链式</span></div>
+  <div class="week-tab" data-week="2"><span class="wk-num">Week 2</span><span class="wk-theme">并行 + 反思</span></div>
+  <div class="week-tab" data-week="3"><span class="wk-num">Week 3</span><span class="wk-theme">工具 + 规划</span></div>
+  <div class="week-tab" data-week="4"><span class="wk-num">Week 4</span><span class="wk-theme">多智能体 + 记忆</span></div>
+  <div class="week-tab" data-week="5"><span class="wk-num">Week 5</span><span class="wk-theme">学习 + MCP + 目标</span></div>
+  <div class="week-tab" data-week="6"><span class="wk-num">Week 6</span><span class="wk-theme">异常 + HIL + RAG</span></div>
+  <div class="week-tab" data-week="7"><span class="wk-num">Week 7</span><span class="wk-theme">通信 + 推理 + 护栏</span></div>
+  <div class="week-tab" data-week="8"><span class="wk-num">Week 8</span><span class="wk-theme">评估 + 综合项目</span></div>
+</div>
+
+<!-- ========== WEEK 1 ========== -->
+<div class="week-content active" data-week="1">
+<div class="section">
+  <h2><span class="num">W1</span>基础概念 + Prompt Chaining + Routing</h2>
+  <p class="desc">本周目标：搞清楚"什么算 Agent"、能写出顺序链 / 条件分支的最小 Agent。</p>
+
+
+
+  <h3><span class="icon">📍</span>原文定位 + 章节摘要</h3>
+
+  <div class="source">
+    <b class="ch">Introduction · "What makes an AI system an agent?"</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1K5jwqB6jh20uHL0TTWxqWOxFk-dzFxRvHzrRRV79hrg/edit?tab=t.0" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开 →</a></div>
+    <div class="summary">作者用 5 个维度定义 Agent：<b>目标导向（goal-oriented）、感知（perception）、推理（reasoning）、行动（action）、自适应（adaptability）</b>。一段简洁的总结："An agent is an LLM with goals, memory, tools, and the ability to take actions in a loop."<br/>本章还铺垫了全书结构：21 个模式不是规则，而是可组合的<b>词汇</b>（vocabulary）。开篇即点明立场：好 Agent 来自正确组合多个模式，而非"用最新的框架"。</div>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1K5jwqB6jh20uHL0TTWxqWOxFk-dzFxRvHzrRRV79hrg/edit?tab=t.0" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本节</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 1 · Prompt Chaining</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1flxKGrbnF2g8yh3F-oVD5Xx7ZumId56HbFpIiPdkqLI/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">把复杂任务拆成顺序的 LLM 调用，每步只做一件事。<b>典型 3 步链：</b> 抽取 → 转换 → 生成。<b>关键：</b> 步骤间用<b>结构化中间表示</b>（JSON / 严格 schema）传递，纯自然语言传递容易丢信息。<br/><b>陷阱：</b>① 错误会向后传染（前一步抽错，后续全错）；② 不能并行，延迟累加；③ 链太长（≥6 步）调试地狱。<br/><b>适用场景：</b> 文档处理 pipeline、NL2SQL、内容审核分步。本章给出 LangChain LCEL 风格的具体实现。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>把一个会让 LLM 抓狂的"巨型 prompt"拆成<b>有先后顺序的小 prompt 链</b>——这是 Gulli 在书中放在第一章的"祖师爷模式"，是所有更复杂模式（Routing、Reflection、Multi-Agent）的基础。</p>
+
+<h4>🧠 核心机制：为什么链式比单次 prompt 更稳？</h4>
+<p>书中给的"市场分析报告"例子很经典：你让一个 prompt 同时做"总结报告 + 找出趋势 + 起草邮件"——LLM 会出现五种典型故障：① <b>instruction neglect</b>（漏指令）；② <b>contextual drift</b>（跑题）；③ <b>error propagation</b>（早期错误放大）；④ <b>context window 不够</b>；⑤ <b>cognitive overload 导致幻觉</b>。</p>
+<p>链式做法：第 1 步只做 summarization（角色=Market Analyst）→ 第 2 步只做 trend identification（角色=Trade Analyst）→ 第 3 步只做 draft email（角色=Documentation Writer）。每一步认知负荷骤降，结果显著更稳。</p>
+
+<h4>🛠 实战要点</h4>
+<ul>
+<li><b>角色赋予</b>：每步给 LLM 不同身份（"You are a Market Analyst..."），提升专注度</li>
+<li><b>结构化中间表示</b>：步骤之间必须传 JSON / XML，<b>不要传自然语言</b>——书中说"the reliability of a prompt chain is highly dependent on the integrity of the data passed between steps"</li>
+<li><b>JSON Schema 兜底</b>：用 Pydantic 或 JSON Schema 校验每步输出，<b>失败要么重试要么 fallback</b></li>
+<li><b>主流框架</b>：LangChain（LCEL 线性链）、LangGraph（带状态、可循环的图）、CrewAI、Google ADK</li>
+<li><b>7 类应用</b>：信息处理 pipeline、复杂问答、数据抽取、内容生成、有状态对话、代码生成、多模态推理</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li><b>链太长（≥6 步）</b>= 调试地狱：错误难定位、监控代价高、延迟累加</li>
+<li>步骤之间用<b>纯文本传递</b>看似自然，实则丢信息——下游模型要重新理解上下文</li>
+<li>没在每步加 validation，错误会向下传染</li>
+</ul>
+
+<h4>🔗 与其他章节的关系</h4>
+<p>Chaining 是"<b>固定流水线</b>"。当你需要"分支"时用 <a href="#" onclick="document.querySelector('[data-week=\'1\']').click();return false;">Ch2 Routing</a>；需要"并发"时用 <a href="#" onclick="document.querySelector('[data-week=\'2\']').click();return false;">Ch3 Parallelization</a>；需要"自我修正"时用 <a href="#" onclick="document.querySelector('[data-week=\'2\']').click();return false;">Ch4 Reflection</a>。整本书的其他 20 个模式都在 Chaining 上做拓展。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1flxKGrbnF2g8yh3F-oVD5Xx7ZumId56HbFpIiPdkqLI/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://colab.research.google.com/drive/15XCzDOvBhIQaZ__xkvruf5sP9OznAbK9" target="_blank" rel="noopener noreferrer">→ 配套代码 (Colab Notebook)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 2 · Routing</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1ux_n8n3T4bYndOjs1DKW5ccpC802KISdy2IWnlvYbas/edit?tab=t.0" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">Chaining 是固定流水线，Routing 是 LLM 世界的 <b>if-else</b>。一个 router 节点判断输入应该去哪条链 / 哪个 handler。<br/><b>三种实现：</b><br/>· <b>LLM Router</b>：最灵活，最贵，最慢<br/>· <b>Embedding Router</b>：把类别先 embed 成 centroid，输入向量找最近——快 100×，准确率略低<br/>· <b>Rule Router</b>：正则 / 关键字，最便宜，最脆<br/><b>必备：</b> 返回结构化 <code>{"route":"X","confidence":0.92}</code>、置信度阈值、fallback 路径。本章给出客服分流、文档分类两个完整案例。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>给 Agent 装上"<b>if-else 的眼睛</b>"——根据输入动态选择走哪条链 / 调用哪个 sub-agent / 用什么工具。Chaining 是固定流水线，Routing 是流水线的<b>分流器</b>。</p>
+
+<h4>🧠 核心机制：三种 Router 实现</h4>
+<p>书中明确给出三种实现方式，按成本-准确率-延迟的 trade-off 排列：</p>
+<ul>
+<li><b>① LLM-based Router</b>：用一个 LLM 调用做分类决策。最灵活（能处理复杂语义），最慢（数百 ms 到数秒），最贵。适合低 QPS、高复杂度场景。</li>
+<li><b>② Embedding-based Router</b>：把每个类别用一组代表样本算 centroid，输入向量做 cosine similarity 找最近类别。速度毫秒级，准确率略低于 LLM Router，适合<b>高 QPS</b>。</li>
+<li><b>③ Rule-based Router</b>：正则、关键字、长度阈值等。最便宜最快，最脆——只适合<b>已知意图边界</b>非常清晰的场景（如 SQL 注入检测）。</li>
+</ul>
+
+<h4>🛠 实战要点</h4>
+<ul>
+<li><b>客服场景示例</b>（书中典型用例）：用户输入 → Router 分类成 [Billing / Tech Support / General Q&A] → 各自交给专门 sub-agent</li>
+<li><b>结构化输出</b>：Router 一定要返回 <code>{"route": "billing", "confidence": 0.92, "reasoning": "..."}</code>，置信度低于阈值（如 0.7）走 fallback</li>
+<li><b>Fallback 路径</b>：任何 Router 都<b>必须</b>有兜底——遇到 unknown 类别时去通用 chain 或 escalate to human</li>
+<li><b>主流框架</b>：LangGraph 用 conditional edge 显式表达分支；Google ADK 把 routing 隐藏在 framework 的"tool 选择"逻辑里</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li>类别不互斥（用户问题同时属于两类）— Router 会"摇摆"。解药：允许 multi-label + 设置主类别</li>
+<li>没监控 routing distribution — 模型 drift 后类别分布悄悄变化，发现时已经晚了</li>
+<li>Embedding Router 的 centroid <b>不更新</b>就老化得很快——业务上线 3 个月内必看一次</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>Routing 常与 <b>Chaining</b> 组合（先 route 再 chain）、与 <b>Multi-Agent (Ch7)</b> 组合（router 当作 supervisor），且本身可以"链式 routing"（先粗分再细分）。在 <b>Resource-Aware Optimization (Ch16)</b> 里又作为"模型路由"出现，根据复杂度选 Haiku/Sonnet/Opus。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1ux_n8n3T4bYndOjs1DKW5ccpC802KISdy2IWnlvYbas/edit?tab=t.0" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <h3><span class="icon">💡</span>核心概念（点击展开）</h3>
+  <details class="concept"><summary>Agent 与普通 LLM 调用的本质区别</summary>
+    <div class="body">普通 LLM 调用是"输入→输出"的一次性映射；Agent 在此之上加了 <b>感知（observation）、规划（planning）、行动（action）、反馈（feedback loop）</b>。<br/><br/>判断一个系统是否"Agentic"可以看 4 个维度：<b>是否有目标？是否能多步？是否能调用外部工具？是否能根据中间结果改变后续动作？</b>都满足才是真 Agent。</div>
+  </details>
+  <details class="concept"><summary>Prompt Chaining：把复杂任务拆成顺序步骤</summary>
+    <div class="body">核心思想：<b>"分而治之"</b>。让 LLM 一步到位往往出错；拆成 step1 → step2 → step3，每步只做一件事，质量显著提升。<br/><br/>关键设计：<b>step 之间的"中间表示"</b>越结构化（JSON、Markdown）越稳定。</div>
+  </details>
+  <details class="concept"><summary>Routing：根据输入动态选择路径</summary>
+    <div class="body">实战经验：路由节点要返回结构化输出（如 <code>{"route": "billing", "confidence": 0.92}</code>），并设置 fallback 路径。<br/><br/>选型：高 QPS 用 Embedding Router；低频复杂分类用 LLM Router。</div>
+  </details>
+
+  <h3><span class="icon">🛠</span>本周动手项目</h3>
+  <div class="handson">
+    <b class="title">项目 W1：用户反馈智能分发 Agent（最小版）</b>
+    <p>设想一个产品有用户反馈群（客服反馈、Bug 报告、功能建议混在一起），构建 Agent 自动分发：</p>
+    <p><b>Step 1（Chain）</b>：接收一段反馈文本 → 抽取出 <code>{user_id, issue_summary, attachments}</code><br/>
+    <b>Step 2（Router）</b>：根据 issue 内容路由到 [Bug / 新需求 / 用户疑问] 三类<br/>
+    <b>Step 3（Chain）</b>：根据路由结果生成对应回复模板（@on-call dev / @on-call PM / 直接答复）</p>
+    <div class="stack"><span>LangChain</span><span>Python</span><span>OpenAI / Claude API</span><span>~150 行代码</span></div>
+  </div>
+
+  <h3><span class="icon">📝</span>本周自测题</h3>
+  <div class="quiz" data-quiz="w1q1">
+    <div class="q"><span class="qnum">Q1.</span>下面哪种系统<b>不</b>算 Agentic 系统？</div>
+    <ul class="options">
+      <li data-correct="false">能根据用户问题调用搜索 API 并基于结果回答的客服 Bot</li>
+      <li data-correct="true">一个只把用户输入拼到 prompt 模板再调用一次 LLM 的应用</li>
+      <li data-correct="false">能在失败时自动重试、修改策略的代码生成助手</li>
+      <li data-correct="false">能拆解任务、多步调用工具达成目标的研究助手</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>关键看是否有"循环 + 决策 + 工具"。一次性 prompt-in-out 没有反馈循环，本质还是 LLM 调用而非 Agent。</div>
+  </div>
+  <div class="quiz" data-quiz="w1q2">
+    <div class="q"><span class="qnum">Q2.</span>Prompt Chaining 比单次大 prompt 更稳定，最核心的原因是？</div>
+    <ul class="options">
+      <li data-correct="false">每一步 token 数更少所以更便宜</li>
+      <li data-correct="true">每一步只承担一个子任务，且步骤间用结构化中间表示传递，错误不会累积扩散</li>
+      <li data-correct="false">链式调用可以并行</li>
+      <li data-correct="false">LLM 对短 prompt 更擅长</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>便宜不是核心；并行恰好是 Chaining 的局限。核心是<b>降低单步认知负荷 + 中间结果可验证</b>。</div>
+  </div>
+  <div class="quiz" data-quiz="w1q3">
+    <div class="q"><span class="qnum">Q3.</span>Embedding Router 相比 LLM Router 的最大优势是？</div>
+    <ul class="options">
+      <li data-correct="false">准确率更高</li>
+      <li data-correct="true">延迟低、成本低，适合高 QPS 场景</li>
+      <li data-correct="false">能处理任意复杂的分类边界</li>
+      <li data-correct="false">不需要事先准备样例</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>Embedding 一次推理就出结果（毫秒级），LLM 路由要几百毫秒甚至几秒。</div>
+  </div>
+  <div class="quiz" data-quiz="w1q4">
+    <div class="q"><span class="qnum">Q4.</span>设计 Router 节点时，<b>最不该</b>省略的是？</div>
+    <ul class="options">
+      <li data-correct="false">置信度分数</li>
+      <li data-correct="true">Fallback 兜底路径</li>
+      <li data-correct="false">日志记录</li>
+      <li data-correct="false">A/B 测试</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>Router 必然会遇到"没有匹配类别"的情况，没有 fallback 会让整个 Agent 崩溃。</div>
+  </div>
+  <div class="quiz" data-quiz="w1q5">
+    <div class="q"><span class="qnum">Q5.</span>Chain 中两个步骤之间用什么传递信息最稳？</div>
+    <ul class="options">
+      <li data-correct="false">完整对话历史</li>
+      <li data-correct="false">原始自然语言段落</li>
+      <li data-correct="true">明确 schema 的 JSON 对象</li>
+      <li data-correct="false">长摘要</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：C。</b>结构化中间表示让下一步的 prompt 更短、更准；且可以单元测试每个 step 的输出。</div>
+  </div>
+</div>
+</div>
+
+<!-- ========== WEEK 2 ========== -->
+<div class="week-content" data-week="2">
+<div class="section">
+  <h2><span class="num">W2</span>Parallelization + Reflection</h2>
+  <p class="desc">本周目标：把链式优化为并行节省时间，让 Agent 学会"自我审查"提升输出质量。</p>
+
+
+
+  <h3><span class="icon">📍</span>原文定位 + 章节摘要</h3>
+
+  <div class="source">
+    <b class="ch">Chapter 3 · Parallelization</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1XVMp4RcRkoUJTVbrP2foWZX703CUJpWkrhyFU2cfUOA/edit?tab=t.0" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">三种典型形态：① <b>Map-Reduce</b>（大任务切片并行 → 汇总，如 100 个文档摘要）；② <b>多视角</b>（同一任务，3 个角色并行回答然后投票或汇总）；③ <b>多采样 / Self-Consistency</b>（同一 prompt 跑 N 次取多数票）。<br/><b>陷阱：</b> 子任务有依赖时强行并行 → 结果不一致；reduce 阶段上下文易超限（解药：分层 reduce）；并发限流和 token 预算需要主动管理。<br/>本章给出 asyncio + LangGraph 的两版实现，对比串行 vs 并行的延迟和质量。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>把"等着串行执行"改成"<b>同时跑独立子任务</b>"，是降低 Agent 延迟最直接的杠杆——书中给的例子：研究 Agent 要总结 5 个来源，串行 50 秒，并行 10 秒。</p>
+
+<h4>🧠 核心机制：三种典型并行形态</h4>
+<ul>
+<li><b>① Map-Reduce 型</b>：100 个文档分别摘要（map）→ 汇总成一份报告（reduce）。最经典，但 reduce 阶段易爆 context</li>
+<li><b>② 多视角型</b>：同一个问题，3 个 Agent 用不同角色（PM/Eng/Designer）并行回答，再投票或汇总。常用于决策类任务</li>
+<li><b>③ 多采样型 / Self-Consistency</b>：同一 prompt 高 temperature 跑 N 次，选出现频率最高的答案。对推理题、数学题特别有效</li>
+</ul>
+
+<h4>🛠 实战要点</h4>
+<ul>
+<li><b>LangChain 的 RunnableParallel</b>：声明式地让多个 chain 并行跑。语法很直观</li>
+<li><b>Google ADK 的"LLM-Driven Delegation"</b>：Coordinator agent 自己识别哪些子任务独立，自动分派</li>
+<li><b>asyncio</b>：纯 Python 实现时用 asyncio.gather() 等所有任务完成</li>
+<li><b>并发上限</b>：必须设 semaphore（如 max_concurrent=10），否则 API 限流会让所有请求一起 fail</li>
+<li><b>I/O 密集场景</b>收益最大：API 调用、向量检索、网页抓取等等</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li><b>误判独立性</b>：以为两个任务独立，其实下游依赖上游某个字段 → 结果不一致。先画依赖图！</li>
+<li><b>Reduce 阶段超 context</b>：100 条 200 字摘要合在一起 = 20K tokens，可能超模型上限。<b>解药：分层 reduce</b>——每 10 条先合并，再合 10 个中间结果</li>
+<li><b>引入并行 = 引入复杂度</b>：debugging、日志、错误处理、限流都变难，"the adoption of a concurrent architecture introduces substantial complexity and cost"（书中原话）。简单任务别强行并行</li>
+<li><b>部分失败处理</b>：10 个并行任务 1 个失败怎么办？整体重试 / 用其他 9 个 / fail-fast？必须预先设计</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>常与 <b>Chaining (Ch1)</b> 混合：先并行抓数据 → 串行 synthesize。也是 <b>Multi-Agent (Ch7)</b> 的底层执行机制（不同 Agent 并行做事）。在 <b>Reasoning Techniques (Ch17)</b> 里 Self-Consistency 是并行采样的应用。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1XVMp4RcRkoUJTVbrP2foWZX703CUJpWkrhyFU2cfUOA/edit?tab=t.0" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 4 · Reflection</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1HXXJOQIMWowtLw4WMiSR360caDAlZPtl5dPPgvq9IT4/edit?tab=t.0#heading=h.a7nkedxjnyap" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">三步循环：<b>Generate → Critique → Refine</b>。Critic 必须"不同于"Generator——换 system prompt 或换模型，否则 LLM 会自我偏好（self-preference bias），critic 形同虚设。<br/><b>适用：</b> 开放式生成（文案、代码 review、策略）。<b>不适用：</b> 事实性 / 有标准答案的任务（数学、SQL）——错的反思后还是错。<br/><b>终止：</b> 不要"直到 critic 满意"（死循环），用<b>"最大轮数 + critique 输出无重大问题"</b>组合条件。Anthropic 的 Constitutional AI 是工业级实例。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>让 Agent 学会"<b>批判自己的初稿，再改一遍</b>"——通过 Generate → Critique → Refine 的反馈环路提升输出质量，是 Agentic AI 区别于普通 LLM 调用的关键能力之一。</p>
+
+<h4>🧠 核心机制：Producer-Critic 模型</h4>
+<p>书中重点推荐 <b>Producer-Critic 模型</b>：用<b>两个独立的 Agent</b>（或同一模型但不同 system prompt）分饰两角：</p>
+<ul>
+<li><b>Producer</b>：生成初稿（如代码、报告、邮件）</li>
+<li><b>Critic</b>：扮演"严格审稿人"——对照预设 rubric / checklist 找问题</li>
+<li><b>Refiner</b>（可由 Producer 兼任）：根据 critique 重写</li>
+</ul>
+<p>Gulli 强调："this separation of concerns enhances objectivity"。如果 Producer 和 Critic 是同一个模型 + 同一个 prompt，会陷入 <b>self-preference bias</b>——LLM 倾向于认可自己的输出，critique 形同虚设。</p>
+
+<h4>🛠 实战要点</h4>
+<ul>
+<li><b>Critic 用不同模型</b>：Producer 用 GPT-4 + Critic 用 Claude，或反之；不能行的话至少换 system prompt</li>
+<li><b>Rubric 必须可量化</b>："清晰度 1-5 分"远胜于"写得好不好"</li>
+<li><b>终止条件组合</b>：max_iterations（如 3 轮）+ "no major issues" 判定。<b>不能</b>等 Critic "完全满意"——会陷入死循环（critic 永远能挑出小毛病）</li>
+<li><b>框架支持</b>：完整迭代反思一般需要 stateful workflow（LangGraph 最适合）；单轮反思可用 LangChain LCEL 实现；Google ADK 用 sequential workflow 模拟</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li><b>成本和延迟翻 2-3 倍</b>：每轮要多调一次 Critic + 多调一次 Refiner。书中明确警告："these benefits come at the cost of increased latency and computational expense"</li>
+<li><b>不是所有任务都适合反思</b>：事实性 / 数学 / SQL 类——错的反思后还是错（反思帮不了 hallucination 类错误）。<b>适合</b>：开放式生成（文案、代码 review、策略分析）</li>
+<li><b>容易超 context window</b>：迭代多轮后历史累积巨大</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>Reflection 是 <b>Self-Correction</b> 的实现方式之一，与 <b>Reasoning Techniques (Ch17)</b> 中的 Self-Consistency 互补。Anthropic 的 Constitutional AI 是 Reflection 的工业级实例（用 rules 当 critic 的 rubric）。在 <b>Multi-Agent (Ch7)</b> 中可看作"两 Agent 互相 review"的简化形态。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1HXXJOQIMWowtLw4WMiSR360caDAlZPtl5dPPgvq9IT4/edit?tab=t.0#heading=h.a7nkedxjnyap" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <h3><span class="icon">💡</span>核心概念</h3>
+  <details class="concept"><summary>Parallelization 的三种典型形态</summary>
+    <div class="body"><b>① Map-Reduce 型</b>：把大任务切分到多个独立子任务并行执行。<br/><b>② 多视角型</b>：同一任务让 3 个 Agent 用不同角色并行回答，最后投票或汇总。<br/><b>③ 多采样型</b>：同一 prompt 跑 N 次，选最常见或最高质量答案（Self-Consistency）。<br/><br/>陷阱：并行 ≠ 总是更好。子任务有依赖时强行并行会得到不一致结果。</div>
+  </details>
+  <details class="concept"><summary>Reflection 的核心循环</summary>
+    <div class="body">三步：<b>Generate → Critique → Refine</b>。<br/>关键技巧：<b>Critic 和 Generator 用不同的 system prompt 或不同模型</b>，避免"自己看自己都觉得好"。</div>
+  </details>
+  <details class="concept"><summary>什么时候用 Reflection 反而是浪费？</summary>
+    <div class="body">不是所有任务都需要反思。<b>对于事实性、有标准答案的任务</b>，反思帮助有限——错的还是错的。<br/>反思最有效的场景：<b>开放式生成</b>，且有清晰的"好坏标准"可以让 critic 参照。</div>
+  </details>
+
+  <h3><span class="icon">🛠</span>本周动手项目</h3>
+  <div class="handson">
+    <b class="title">项目 W2-A：多视角竞品分析（Parallelization）</b>
+    <p>给定一个竞品 URL，并行 3 个 Agent 分别从"产品功能 / 商业模式 / 技术架构"3 个角度分析，最后由 reducer agent 汇总成一页报告。</p>
+    <div class="stack"><span>asyncio</span><span>LangGraph</span><span>~200 行</span></div>
+  </div>
+  <div class="handson">
+    <b class="title">项目 W2-B：文档自动审查（Reflection）</b>
+    <p>给一份草稿文档（PRD / 技术方案 / 博客均可），Critic Agent 用"资深审稿人 checklist（清晰度 / 可量化 / 异常情况 / 数据上报）"逐项 review，Refiner 根据 critique 出修改建议。</p>
+    <div class="stack"><span>LangChain</span><span>Claude / GPT-4</span><span>~250 行</span></div>
+  </div>
+
+  <h3><span class="icon">📝</span>本周自测题</h3>
+  <div class="quiz" data-quiz="w2q1">
+    <div class="q"><span class="qnum">Q1.</span>下面哪个场景<b>不适合</b>用 Parallelization？</div>
+    <ul class="options">
+      <li data-correct="false">100 篇评论的情感分类</li>
+      <li data-correct="false">同一问题让 5 个 Agent 各自回答然后投票</li>
+      <li data-correct="true">一个多轮对话的状态更新</li>
+      <li data-correct="false">从一份合同中并行提取"金额 / 期限 / 违约条款"三类信息</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：C。</b>多轮对话有强时序依赖，必须串行。</div>
+  </div>
+  <div class="quiz" data-quiz="w2q2">
+    <div class="q"><span class="qnum">Q2.</span>Reflection 模式中，Critic 用同一个 prompt 直接评价 Generator 输出的最大问题是？</div>
+    <ul class="options">
+      <li data-correct="false">速度太慢</li>
+      <li data-correct="true">"自我偏好"——LLM 倾向于认可自己的输出，导致 critique 失效</li>
+      <li data-correct="false">成本翻倍</li>
+      <li data-correct="false">无法处理多模态</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>研究表明 LLM 对自己刚生成的内容有"自我偏好"。Critic 需要换 system prompt 或换模型。</div>
+  </div>
+  <div class="quiz" data-quiz="w2q3">
+    <div class="q"><span class="qnum">Q3.</span>Self-Consistency 的核心思路是？</div>
+    <ul class="options">
+      <li data-correct="false">让一个 Agent 反复修改自己的答案</li>
+      <li data-correct="true">同一 prompt 高 temperature 跑多次，选多数投票答案</li>
+      <li data-correct="false">用多个不同 prompt 跑同一任务</li>
+      <li data-correct="false">让两个 LLM 互相辩论</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>对推理题特别有效——正确答案通常是众多采样里出现频率最高的那个。</div>
+  </div>
+  <div class="quiz" data-quiz="w2q4">
+    <div class="q"><span class="qnum">Q4.</span>关于 Reflection 的迭代终止条件，最合理的是？</div>
+    <ul class="options">
+      <li data-correct="false">固定迭代 5 次</li>
+      <li data-correct="true">设置最大轮数 + critique 输出"无重大问题"则提前停止</li>
+      <li data-correct="false">一直迭代直到 critic 完全满意</li>
+      <li data-correct="false">迭代到成本超过预算</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>"完全满意"会陷入死循环；固定次数浪费。<b>组合条件</b>才是工业实践。</div>
+  </div>
+  <div class="quiz" data-quiz="w2q5">
+    <div class="q"><span class="qnum">Q5.</span>Map-Reduce 风格的并行处理 100 个文档摘要，最容易出问题的环节是？</div>
+    <ul class="options">
+      <li data-correct="false">Map 阶段的 LLM 调用</li>
+      <li data-correct="true">Reduce 阶段——合并 100 条摘要时上下文超长</li>
+      <li data-correct="false">网络并发</li>
+      <li data-correct="false">日志记录</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>解决方案：分层 reduce（每 10 条先合并 → 再合并），或用 streaming summary。</div>
+  </div>
+</div>
+</div>
+
+<!-- ========== WEEK 3 ========== -->
+<div class="week-content" data-week="3">
+<div class="section">
+  <h2><span class="num">W3</span>Tool Use + Planning</h2>
+  <p class="desc">本周目标：让 Agent 摆脱"只会说话"——能调用真实世界的工具，并自主拆解任务。</p>
+
+
+
+  <h3><span class="icon">📍</span>原文定位 + 章节摘要</h3>
+
+  <div class="source">
+    <b class="ch">Chapter 5 · Tool Use</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1bE4iMljhppqGY1p48gQWtZvk6MfRuJRCiba1yRykGNE/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary"><b>Function Calling vs Tool Use 的区别：</b> 前者是底层 API 机制（LLM 输出 JSON 表示要调函数）；后者是设计模式（定义→决策→执行→回填→继续推理整个闭环）。<br/><b>工具设计 5 原则：</b> ① 单一职责（不要做万能工具）；② 清晰描述（description 字段直接决定 LLM 用不用对）；③ 幂等（可重复调用产生相同结果）；④ 结构化错误（返回 <code>{"error","code","suggestion"}</code> 而非 throw）；⑤ 限速友好（内置 rate limit 处理）。<br/><b>ReAct 范式</b>（Yao et al. 2022）：交错输出 Thought / Action / Observation，让推理过程可见可纠。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>让 LLM <b>跳出"只会说话"的牢笼</b>——通过 Function Calling 机制调用外部 API、数据库、代码执行器、计算器，把 Agent 接通真实世界。是从"聊天机器人"升级为"Agent"的临界点。</p>
+
+<h4>🧠 核心机制：5 步循环</h4>
+<p>书中明确列出标准流程：</p>
+<ol>
+<li><b>Tool Definition</b>：把外部函数 / API 用结构化 schema 描述给 LLM（包含 name、description、parameters）</li>
+<li><b>LLM Decision</b>：LLM 看到用户请求 + 工具列表，决定是否需要调工具、调哪个、传什么参数</li>
+<li><b>Structured Call</b>：LLM 输出 <code>{"name": "get_weather", "args": {"city": "Beijing"}}</code> 形式的 JSON</li>
+<li><b>Orchestration Layer 执行</b>：框架解析 JSON，真实调用函数，拿到结果</li>
+<li><b>Result Injection</b>：把工具结果回填给 LLM，LLM 用它继续生成最终回答</li>
+</ol>
+
+<h4>🛠 工具设计 5 原则（书中精华）</h4>
+<ul>
+<li><b>① 单一职责</b>：一个工具只做一件事，不要做"万能工具"</li>
+<li><b>② Clear description</b>：description 字段<b>直接决定 LLM 用不用对</b>——LLM 是看 description 而非函数名决策的。写人话，举例子</li>
+<li><b>③ 幂等</b>：可重复调用产生相同结果（重试时不会副作用累加）</li>
+<li><b>④ 结构化错误</b>：返回 <code>{"error":"...","code":"...","suggestion":"..."}</code> 而非 throw exception</li>
+<li><b>⑤ 限速友好</b>：内置 rate limit 处理，不让上游 Agent 操心</li>
+</ul>
+
+<h4>📦 主流框架</h4>
+<ul>
+<li><b>LangChain</b>：<code>@tool</code> 装饰器 + <code>create_tool_calling_agent</code> + <code>AgentExecutor</code></li>
+<li><b>Google ADK</b>：预置 Google Search、Code Execution、Vertex AI Search 等工具，开箱即用</li>
+<li><b>Crew AI</b>：以 Agent + Task + Tool 三元组组织</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li>工具描述模糊 → LLM 选错工具或不知何时调用（最常见的故障！）</li>
+<li>参数没有类型限制 → LLM 传错类型导致执行失败</li>
+<li>没设超时 → 慢工具拖垮整个 Agent</li>
+<li><b>工具数量过多（&gt;20 个）</b>：LLM 选择困难，准确率下降。解药：分组 + Routing 先选组</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>Tool Use 是 <b>MCP (Ch10)</b> 标准化的对象之一。与 <b>Planning (Ch6)</b> 组合形成 ReAct 范式。在 <b>Reasoning Techniques (Ch17)</b> 里 Program-Aided Reasoning 也是 Tool Use 的特例（代码执行器作为工具）。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1bE4iMljhppqGY1p48gQWtZvk6MfRuJRCiba1yRykGNE/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 6 · Planning</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/18vvNESEwHnVUREzIipuaDNCnNAREGqEfy9MQYC9wb4o/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">两大范式对比：<br/>· <b>ReAct</b>：边想边做，每步根据观察决定下一步。优点灵活，缺点遇到长任务易迷路。<br/>· <b>Plan-and-Execute</b>：先一次性生成完整 plan，executor 逐条执行，中途允许 replan。<br/><b>选型经验：</b> 步数 ≤ 3 → ReAct；4-10 → Plan-and-Execute；&gt;10 或高度不确定 → 分层 plan（粗规划，每个粗步骤再细规划）。<br/><b>Plan-and-Execute 的灵魂是 Replan</b>：执行中发现 plan 不可行时能重新规划，否则等同"按死规则执行"。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>给 Agent 一个 high-level 目标（"组织一次团队 offsite"），让它<b>自主拆解出可执行步骤序列</b>——从"反应式响应"升级为"战略式执行"。这是真正 Agentic AI 的核心。</p>
+
+<h4>🧠 核心机制：Planning 的两种范式</h4>
+<p>书中对比了两条主线：</p>
+<ul>
+<li><b>① ReAct (Reason + Act)</b>：边想边做。每一步输出 <code>Thought → Action → Observation</code>，根据观察决定下一步。优点：灵活、能 react to surprises；缺点：步数多时容易迷路</li>
+<li><b>② Plan-and-Execute</b>：先一次性生成完整 plan（步骤列表），然后 executor 逐条执行，中途允许 replan。优点：plan 可被人审查；缺点：plan 不够灵活</li>
+</ul>
+
+<h4>🛠 实战要点</h4>
+<ul>
+<li><b>初始状态 + 目标状态 + 操作集合</b>：经典 AI Planning 的三要素，LLM 也按这个套路生成 plan</li>
+<li><b>"Plan is not a rigid script"</b>：书中强调初始 plan 只是起点，遇到障碍要能 replan</li>
+<li><b>选型经验</b>：步数 ≤ 3 → ReAct；4-10 步 → Plan-and-Execute；&gt; 10 步或高度不确定 → 分层 plan（先粗规划，每个粗步骤再细规划）</li>
+<li><b>Google DeepResearch</b>：书中标杆案例——它 reflects、plans、executes 三件事循环做</li>
+<li><b>典型应用</b>：研究报告生成、员工 onboarding、竞品分析、复杂代码重构</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li><b>没有 Replan 机制</b>= "按死规则执行"。Plan-and-Execute 的灵魂是 replan</li>
+<li><b>Plan 太抽象</b>："研究市场" 这种步骤没法直接执行 → 拆得更具体或交给 sub-planner</li>
+<li><b>过度计划</b>：简单任务（1-2 步）不需要 plan，直接 ReAct 反而高效</li>
+<li><b>状态管理混乱</b>：plan 步骤之间共享什么状态、怎么共享？必须显式设计</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>Planning 几乎是所有高级模式的前置：<b>Multi-Agent (Ch7)</b> 通常用 Planner 当 supervisor 分派任务给 worker；<b>Goal Setting (Ch11)</b> 是 Planning 的指挥棒；<b>Exception Handling (Ch12)</b> 给 Replan 提供触发信号。ReAct 在 <b>Reasoning Techniques (Ch17)</b> 中是 reasoning + acting 的代表。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/18vvNESEwHnVUREzIipuaDNCnNAREGqEfy9MQYC9wb4o/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <h3><span class="icon">💡</span>核心概念</h3>
+  <details class="concept"><summary>Function Calling vs Tool Use 的概念区分</summary>
+    <div class="body">· <b>Function Calling</b> 是底层 API 能力：LLM 输出符合 schema 的 JSON 表示"我要调用 X 函数"。<br/>· <b>Tool Use</b> 是设计模式：包含"工具定义 → LLM 决策 → 执行 → 结果回填 → 继续推理"整个闭环。<br/>Function calling 是<b>砖</b>，Tool Use 是用砖砌成的<b>墙</b>。</div>
+  </details>
+  <details class="concept"><summary>ReAct (Reason + Act) 范式</summary>
+    <div class="body">Yao et al. 2022 提出。每一轮 Agent 输出：<pre>Thought: 我现在需要 X
+Action: search("X")
+Observation: ...返回结果...
+Thought: 根据结果，我下一步...
+Action: ...</pre>"Thought"让模型显式推理，"Action"调用工具，"Observation"回填结果。</div>
+  </details>
+  <details class="concept"><summary>Planning：Plan-and-Execute vs ReAct</summary>
+    <div class="body">经验法则：<br/>· 步数 ≤ 3：直接 ReAct<br/>· 步数 4-10：Plan-and-Execute<br/>· 步数 &gt; 10 或高度不确定：分层 plan</div>
+  </details>
+  <details class="concept"><summary>工具设计的 5 个原则</summary>
+    <div class="body">① <b>单一职责</b>；② <b>清晰描述</b>；③ <b>幂等</b>；④ <b>结构化错误</b>；⑤ <b>限速友好</b>。详见原文。</div>
+  </details>
+
+  <h3><span class="icon">🛠</span>本周动手项目</h3>
+  <div class="handson">
+    <b class="title">项目 W3：运营数据查询 Agent（Tool Use + Plan-and-Execute）</b>
+    <p>构造一个能回答"营销活动 X 表现如何"的 Agent，提供以下工具集：</p>
+    <p>· <code>get_campaign_meta(campaign_id)</code> – 查活动基本信息<br/>
+    · <code>query_metrics(campaign_id, date_range)</code> – 查转化 / 留存指标<br/>
+    · <code>compare_campaigns(id1, id2)</code> – 对比两个活动<br/>
+    · <code>get_user_segment(campaign_id)</code> – 查用户分布</p>
+    <p>用户问："分析活动 12345 并和上个活动对比" → Agent 自动 plan：[get_meta → query_metrics → find_prev_campaign → query_metrics(prev) → compare → summarize] → 依次执行。</p>
+    <div class="stack"><span>LangGraph</span><span>Mock SQL / DuckDB</span><span>~300 行</span></div>
+  </div>
+
+  <h3><span class="icon">📝</span>本周自测题</h3>
+  <div class="quiz" data-quiz="w3q1">
+    <div class="q"><span class="qnum">Q1.</span>工具 description 写得不好最直接的后果是？</div>
+    <ul class="options">
+      <li data-correct="false">工具执行报错</li>
+      <li data-correct="true">LLM 选错工具或不知道何时调用</li>
+      <li data-correct="false">API 限流</li>
+      <li data-correct="false">JSON schema 不合法</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>LLM 是根据 description 而不是函数名来决策的。</div>
+  </div>
+  <div class="quiz" data-quiz="w3q2">
+    <div class="q"><span class="qnum">Q2.</span>ReAct 的核心创新是什么？</div>
+    <ul class="options">
+      <li data-correct="false">让 LLM 能调用工具</li>
+      <li data-correct="true">显式地交错"推理（Thought）"和"行动（Action）"，让推理过程可见可纠</li>
+      <li data-correct="false">提升 LLM 的数学能力</li>
+      <li data-correct="false">降低 token 消耗</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>调用工具不是 ReAct 独有；ReAct 的关键是<b>把"想"和"做"分离并显式化</b>。</div>
+  </div>
+  <div class="quiz" data-quiz="w3q3">
+    <div class="q"><span class="qnum">Q3.</span>下列哪个任务最适合用 Plan-and-Execute（而非 ReAct）？</div>
+    <ul class="options">
+      <li data-correct="false">"帮我查一下今天的天气"</li>
+      <li data-correct="true">"准备一份 5 家竞品对比报告，每家查官网、用户评价、定价、技术栈、市场份额"</li>
+      <li data-correct="false">"翻译这段话"</li>
+      <li data-correct="false">"总结这封邮件"</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>明确多步、结构化、可预先规划——典型 Plan-and-Execute 场景。</div>
+  </div>
+  <div class="quiz" data-quiz="w3q4">
+    <div class="q"><span class="qnum">Q4.</span>下面哪个<b>不是</b>工业级工具设计的原则？</div>
+    <ul class="options">
+      <li data-correct="false">单一职责</li>
+      <li data-correct="false">幂等性</li>
+      <li data-correct="false">结构化错误返回</li>
+      <li data-correct="true">尽可能让一个工具能做多种事，减少工具数量</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：D。</b>工具越"万能"，LLM 越难正确调用。宁可拆细。</div>
+  </div>
+  <div class="quiz" data-quiz="w3q5">
+    <div class="q"><span class="qnum">Q5.</span>Plan-and-Execute 中，最重要的"安全网"是？</div>
+    <ul class="options">
+      <li data-correct="false">日志</li>
+      <li data-correct="true">Replan 机制——当执行中发现 plan 不可行时能重新规划</li>
+      <li data-correct="false">缓存</li>
+      <li data-correct="false">权限控制</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>没有 replan 等于"按死规则执行"，遇到中间结果意外就崩。</div>
+  </div>
+</div>
+</div>
+
+<!-- ========== WEEK 4 ========== -->
+<div class="week-content" data-week="4">
+<div class="section">
+  <h2><span class="num">W4</span>Multi-Agent + Memory Management</h2>
+  <p class="desc">本周目标：从单 Agent 升级到协作系统，并解决"Agent 怎么记住事"的核心难题。</p>
+
+
+
+  <h3><span class="icon">📍</span>原文定位 + 章节摘要</h3>
+
+  <div class="source">
+    <b class="ch">Chapter 7 · Multi-Agent</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1RZ5-2fykDQKOBx01pwfKkDe0GCs5ydca7xW9Q4wqS_M/edit?tab=t.0" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">四种协作拓扑：① <b>Supervisor / Orchestrator</b>（中心调度，最常见，最易调试）；② <b>Peer / Network</b>（平等通信，AutoGen 默认，灵活但 debug 噩梦）；③ <b>Hierarchical</b>（多层 supervisor，适合超大任务）；④ <b>Pipeline</b>（流水线串行，本质是 Chain）。<br/><b>反共识观点：</b> 作者直言"很多 multi-agent 系统效果不如一个设计良好的单 Agent"。原因：Agent 间通信丢信息、协调开销大、错误跨 Agent 传播。<br/><b>真正该用 multi-agent 的 3 种情况：</b> 不同角色需要不同 system prompt / 不同模型；任务能真正并行；需要工具集 / 权限隔离（如安全 Agent 不该有写权限）。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>不是"一个超级 Agent"，而是"<b>多个专精 Agent 协同</b>"——通过 task decomposition + inter-agent communication 解决单 Agent 搞不定的复杂多领域问题。</p>
+
+<h4>🧠 核心机制：4 种协作拓扑</h4>
+<p>书中重点介绍以下协作形态：</p>
+<ul>
+<li><b>① Sequential Handoffs</b>：A 做完交给 B，B 做完交给 C（本质是 Chaining 的多 Agent 版）</li>
+<li><b>② Parallel Workstreams</b>：多个 Agent 并行处理不同方面（Chaining 配合 Parallelization）</li>
+<li><b>③ Hierarchical / Supervisor</b>：Supervisor 决定分派任务给哪个 worker，收集结果再汇总——<b>最常用</b>、最易调试</li>
+<li><b>④ Debate</b>：两个或多个 Agent 互相论辩，提升答案质量（类似 Reflection 的扩展版）</li>
+</ul>
+<p><b>典型示例</b>：复杂研究任务 = Research Agent（信息检索） + Data Analysis Agent（统计） + Synthesis Agent（写报告）。</p>
+
+<h4>🛠 实战要点</h4>
+<ul>
+<li><b>专精化 system prompt</b>：每个 Agent 一份 role-specific 提示词。书中强调"shared ontology"——所有 Agent 共享相同术语表，否则 communication 出问题</li>
+<li><b>Communication Protocol</b>：定义清晰的消息格式（如 JSON schema 描述 task / status / result）</li>
+<li><b>框架</b>：CrewAI（最早做 multi-agent 的）、AutoGen（Microsoft）、LangGraph（用图建模 agent 网络）、Google ADK（多 Agent 内置）</li>
+<li><b>主要价值</b>：① 专业化（不同模型 / 工具 / 权限隔离）；② 可扩展（加新角色不影响别人）；③ 并行加速</li>
+</ul>
+
+<h4>⚠️ 易错点（书中最警告的部分）</h4>
+<ul>
+<li><b>"Multi-Agent 总是更好"是误区</b>：很多 multi-agent 系统效果<b>不如一个设计良好的单 Agent</b>。原因：① 通信丢信息；② 协调开销大；③ 错误跨 Agent 传播放大</li>
+<li><b>真正该用 multi-agent 的 3 种情况</b>：① 不同角色需要不同 system prompt / 不同模型；② 任务能真正并行；③ 需要工具集 / 权限隔离（如审计 Agent 不该有写权限）</li>
+<li><b>Peer / Network 拓扑很 cool 但 debug 噩梦</b>——消息满天飞，事后还原过程很难。90% 项目用 Supervisor 就够</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>Multi-Agent 是 <b>Inter-Agent Communication / A2A (Ch15)</b> 的应用场景；与 <b>Memory Management (Ch8)</b> 紧密关联（agents 之间共享什么记忆？）；Supervisor 角色本质是 <b>Planning (Ch6)</b> 的执行体。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1RZ5-2fykDQKOBx01pwfKkDe0GCs5ydca7xW9Q4wqS_M/edit?tab=t.0" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 8 · Memory Management</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1asVTObtzIye0I9ypAztaeeI_sr_Hx2TORE02uUuqH_c/edit?tab=t.0" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary"><b>三层 Memory 模型：</b> ① <b>Short-term（工作记忆）</b>当前对话 message 列表，受 context window 限制；② <b>Long-term（语义记忆）</b>跨会话事实和偏好，向量库存储；③ <b>Episodic（情景记忆）</b>过去完整任务执行记录，可被检索作为 few-shot。<br/><b>长对话四种压缩策略：</b> Sliding Window（简单粗暴）、Summarization（信息有损）、Vector Recall（无损但查询慢）、Hierarchical（推荐——最近原文 + 中期摘要 + 远期向量召回）。<br/><b>关键操作三件套：</b> 压缩 / 检索 / 遗忘（decay）。本章还讨论了"Memory 隐私"——用户要求删除特定记忆的工程实现。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>让 Agent <b>"记住事"</b>——从"每次对话都失忆"的 stateless LLM，升级为能跨会话记得用户偏好、过往任务、领域知识的真正智能体。书中说这是"agent 实用化"的硬门槛。</p>
+
+<h4>🧠 核心机制：双层 / 三层记忆模型</h4>
+<p>书中给的工业级 Memory 分层：</p>
+<ul>
+<li><b>① Short-term（工作记忆）</b>：当前对话的 message 历史，存在 LLM context window 里。受 token 上限约束</li>
+<li><b>② Long-term（语义记忆）</b>：跨会话的事实、偏好、知识。存在<b>向量数据库</b>（Chroma、Pinecone、Weaviate），按语义检索</li>
+<li><b>③ Episodic（情景记忆）</b>：过去完整任务的执行轨迹，可作 few-shot 示例反哺新任务</li>
+</ul>
+
+<h4>🛠 实战要点（以 Google ADK 为例）</h4>
+<ul>
+<li><b>Session</b>：一次连续对话的容器，包含 events（消息历史）+ state（临时数据）</li>
+<li><b>State</b>：一个 dict，按前缀区分作用域：<code>user:</code>（跨 session 的用户级）、<code>app:</code>（跨用户的全局）、<code>temp:</code>（仅当前 session）</li>
+<li><b>MemoryService</b>：长期记忆的接口，对接外部向量库</li>
+<li><b>更新方式</b>：用 <code>EventActions.state_delta</code> 或 <code>output_key</code>，<b>不要直接改 state dict</b>（会绕过 framework 的 audit 和持久化）</li>
+</ul>
+
+<h4>📐 长对话压缩 4 策略</h4>
+<ul>
+<li><b>① Sliding Window</b>：只保留最近 N 轮（简单粗暴，丢早期信息）</li>
+<li><b>② Summarization</b>：旧消息总结成一段（信息有损，细节丢失）</li>
+<li><b>③ Vector Recall</b>：旧消息存向量库按需检索（无损但查询慢）</li>
+<li><b>④ Hierarchical</b>（推荐）：最近原文 + 中期摘要 + 远期向量召回，三者组合</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li><b>Memory 隐私</b>：用户要求删除某条记忆怎么办？必须支持<b>逐条 DELETE</b>（这也是 memory 比 fine-tuning 优越的地方之一）</li>
+<li><b>关键信息只存摘要</b>：丢细节后后续无法精确引用——必须 keep raw snippets in vector store</li>
+<li><b>没设 TTL（Time-To-Live）</b>：老旧记忆累积成噪声，影响检索准确度</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>Memory 是 <b>Learning & Adaptation (Ch9)</b> 的底层基础设施（memory-based learning 直接读写 episodic memory）。与 <b>RAG (Ch14)</b> 在技术栈上高度重叠（都用向量库）但目的不同：RAG 检索外部知识，Memory 检索 Agent 自身经验。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1asVTObtzIye0I9ypAztaeeI_sr_Hx2TORE02uUuqH_c/edit?tab=t.0" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <h3><span class="icon">💡</span>核心概念</h3>
+  <details class="concept"><summary>Multi-Agent 的 4 种协作拓扑</summary>
+    <div class="body">详见摘要。<b>90% 的实际项目用 Supervisor 就够了</b>——简单可控。Peer 拓扑 debug 噩梦。</div>
+  </details>
+  <details class="concept"><summary>"Multi-Agent 比单 Agent 更好"是个误区</summary>
+    <div class="body">很多 multi-agent 系统效果不如一个设计良好的单 Agent。<br/>真正需要 multi-agent 的场景：<br/>· 不同角色需要<b>不同 system prompt / 不同模型</b><br/>· 任务可以<b>真正并行</b><br/>· 需要<b>专业化的工具集隔离</b></div>
+  </details>
+  <details class="concept"><summary>Memory 的三层模型</summary>
+    <div class="body"><b>① Short-term</b>：当前对话 message 列表<br/><b>② Long-term</b>：跨会话事实，向量库<br/><b>③ Episodic</b>：过去任务执行记录</div>
+  </details>
+  <details class="concept"><summary>对话过长时的 4 种处理策略</summary>
+    <div class="body">① Sliding Window；② Summarization；③ Vector Recall；④ Hierarchical（推荐）</div>
+  </details>
+
+  <h3><span class="icon">🛠</span>本周动手项目</h3>
+  <div class="handson">
+    <b class="title">项目 W4：产品需求协作团队 Agent（Multi-Agent + Memory）</b>
+    <p>用 LangGraph 实现 4 个角色 Agent：</p>
+    <p>· <b>PM Agent</b>：写需求和用户故事<br/>
+    · <b>Designer Agent</b>：评估交互合理性<br/>
+    · <b>Engineer Agent</b>：评估技术可行性、估时<br/>
+    · <b>Supervisor</b>：协调，最终汇总成 PRD</p>
+    <p>加分层 Memory：每个 Agent 维护自己的工作记忆，Supervisor 持有全局 episodic memory（记录哪些方案被否决过，避免兜圈）。</p>
+    <div class="stack"><span>LangGraph</span><span>Chroma 向量库</span><span>~500 行</span></div>
+  </div>
+
+  <h3><span class="icon">📝</span>本周自测题</h3>
+  <div class="quiz" data-quiz="w4q1">
+    <div class="q"><span class="qnum">Q1.</span>下面哪种情况<b>最不</b>适合用 Multi-Agent？</div>
+    <ul class="options">
+      <li data-correct="false">需要安全和功能 Agent 严格隔离权限</li>
+      <li data-correct="false">需要并行从 3 个不同视角分析</li>
+      <li data-correct="true">一个清晰的 5 步线性任务</li>
+      <li data-correct="false">不同子任务需要完全不同的 system prompt</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：C。</b>线性 5 步任务用 Chain / Plan-and-Execute 单 Agent 就够。</div>
+  </div>
+  <div class="quiz" data-quiz="w4q2">
+    <div class="q"><span class="qnum">Q2.</span>Supervisor 拓扑相比 Peer 拓扑的最大优势？</div>
+    <ul class="options">
+      <li data-correct="false">效率更高</li>
+      <li data-correct="true">控制流清晰、可观测、易调试</li>
+      <li data-correct="false">能处理更复杂的任务</li>
+      <li data-correct="false">不需要 Memory</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>所有路径都过 supervisor，可以 trace 全过程。</div>
+  </div>
+  <div class="quiz" data-quiz="w4q3">
+    <div class="q"><span class="qnum">Q3.</span>Long-term Memory 一般用什么存储？</div>
+    <ul class="options">
+      <li data-correct="false">关系数据库</li>
+      <li data-correct="false">文件系统</li>
+      <li data-correct="true">向量数据库（embedding + ANN 检索）</li>
+      <li data-correct="false">Redis 等 KV 存储</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：C。</b>长期记忆需要"按语义"检索而非精确匹配。</div>
+  </div>
+  <div class="quiz" data-quiz="w4q4">
+    <div class="q"><span class="qnum">Q4.</span>对话历史的"摘要式压缩"最大的代价是？</div>
+    <ul class="options">
+      <li data-correct="false">速度慢</li>
+      <li data-correct="false">成本高</li>
+      <li data-correct="true">信息有损——细节会被丢失，影响后续精确引用</li>
+      <li data-correct="false">不能用于多语言</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：C。</b>所以推荐 Hierarchical：摘要 + 关键原文向量召回。</div>
+  </div>
+  <div class="quiz" data-quiz="w4q5">
+    <div class="q"><span class="qnum">Q5.</span>Episodic Memory 主要用来？</div>
+    <ul class="options">
+      <li data-correct="false">存用户的偏好</li>
+      <li data-correct="true">把成功 / 失败的过往任务执行记录作为 few-shot 示例反哺当前任务</li>
+      <li data-correct="false">缓存 LLM 调用结果</li>
+      <li data-correct="false">存系统配置</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>Episodic = "情景"，存的是"做过什么"的完整轨迹。</div>
+  </div>
+</div>
+</div>
+
+<!-- ========== WEEK 5 ========== -->
+<div class="week-content" data-week="5">
+<div class="section">
+  <h2><span class="num">W5</span>Learning & Adaptation + MCP + Goal Setting</h2>
+  <p class="desc">本周目标：理解 Agent 如何"在线学习"、掌握 MCP 协议、学会给 Agent 设目标和监控。</p>
+
+
+
+  <h3><span class="icon">📍</span>原文定位 + 章节摘要</h3>
+
+  <div class="source">
+    <b class="ch">Chapter 9 · Learning and Adaptation</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1UHTEDCmSM1nwB-iyMoHuYzVcu_B_4KkJ2ITGGUKqo8s/edit?tab=t.0" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">Agent 的"学习"不是只有 fine-tuning。<b>三种方式</b>：① <b>In-Context Learning</b>（few-shot 示例，最便宜，重启即丢）；② <b>Memory-Based Learning</b>（成功 / 失败经验存 episodic memory，下次检索复用，<b>这是 Agent 自我改进的主流方式</b>）；③ <b>Parameter Update</b>（fine-tuning / RLHF / DPO，最贵但最持久）。<br/><b>选型：</b> 大多数项目先用 ②，效果到瓶颈再考虑 ③。Memory-based 还有<b>隐私优势</b>——用户要求删除自己的数据时可即时生效（fine-tuned 权重几乎无法做到）。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>让 Agent <b>"越用越聪明"</b>——不是只有 fine-tuning 一种学习方式，而是包含 in-context learning、memory-based learning、self-modification 等多种范式，让 Agent 在动态环境中自主进化。</p>
+
+<h4>🧠 核心机制：3 种学习方式</h4>
+<ul>
+<li><b>① In-Context Learning</b>：通过 few-shot 示例临时学习。最便宜、最即时、但重启即丢</li>
+<li><b>② Memory-Based Learning</b>：把成功 / 失败经验存进 episodic memory，下次任务前检索"过去遇到过类似情况吗"，作为 few-shot 注入。<b>这是 Agent 自我改进的主流方式</b>——成本低、可解释、可逐条删除（隐私友好）</li>
+<li><b>③ Parameter Update</b>：fine-tuning / RLHF / DPO，真改模型权重。最贵、最持久、最难撤销</li>
+</ul>
+
+<h4>🌟 前沿案例（书中重点介绍）</h4>
+<ul>
+<li><b>SICA (Self-Improving Coding Agent)</b>：能修改自己的代码来提升 benchmark 表现。它发明了 Smart Editor、AST Symbol Locator 等工具——典型的 self-modification</li>
+<li><b>AlphaEvolve（Google）</b>：用 LLM + 进化算法发现新的、更高效的算法解。已经在数学、计算机科学问题上发现人类未知的解</li>
+<li><b>RLHF/RLAIF</b>：用人类（或 AI）偏好作为 reward signal 微调模型</li>
+</ul>
+
+<h4>🛠 实战要点</h4>
+<ul>
+<li><b>架构：Sub-agent + Overseer</b>：自我改进系统通常需要一个 overseer 监督 sub-agent 的修改不破坏稳定性</li>
+<li><b>Context window 是关键</b>：system prompt、core prompts、assistant messages 的组织方式决定学习效率</li>
+<li><b>选型路径</b>：先尝试 ②（memory-based），效果到瓶颈再考虑 ③（fine-tune）</li>
+<li><b>持续学习需要数据 pipeline</b>：经验从对话流入 memory 的过程要自动化</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li><b>Self-modification 失控</b>：让 Agent 改自己的代码很危险——必须有 overseer + 沙箱 + 回滚机制</li>
+<li><b>Memory 噪声</b>：错误的 episodic 记忆会污染未来决策。需要"质量过滤"或"deprecation"机制</li>
+<li><b>Fine-tune 的成本黑洞</b>：标注数据 + GPU 时间 + 模型评估 + 部署——比想象中贵</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>Learning 直接依赖 <b>Memory (Ch8)</b>。与 <b>Reflection (Ch4)</b> 共同构成"自我改进"机制——前者是<b>跨任务</b>的学习，后者是<b>任务内</b>的修正。<b>Evaluation (Ch19)</b> 是 learning 的反馈信号源。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1UHTEDCmSM1nwB-iyMoHuYzVcu_B_4KkJ2ITGGUKqo8s/edit?tab=t.0" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 10 · Model Context Protocol (MCP)</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1e6XimYczKmhX9zpqEyxLFWPQgGuG0brp7Hic2sFl_qw/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">Anthropic 2024 年底推出的开放协议，业界戏称"LLM 的 USB-C"。<b>解决核心痛点：</b> 每接一个新工具 / 数据源就要写一遍适配代码。<br/><b>三个核心对象：</b> ① <b>Tools</b>（可执行操作，如 query_db）；② <b>Resources</b>（可读数据，如文件 / URI）；③ <b>Prompts</b>（参数化 prompt 模板）。<br/><b>架构：</b> Host（Claude Desktop / IDE）↔ Client（Host 内置）↔ Server（你写的工具封装），用 JSON-RPC 通信，支持 stdio 和 SSE / HTTP 传输。<br/><b>关键收益：</b> 你写一个 MCP server，所有支持 MCP 的客户端都能直接接入——告别 N×M 适配地狱。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>Anthropic 主导的<b>开放协议</b>，被业界戏称为"<b>LLM 的 USB-C</b>"——用一套标准让 LLM 接入任何工具 / 数据源，告别"每接一个新 API 就写一遍适配代码"。2025-2026 年 Agent 工程师必备技能。</p>
+
+<h4>🧠 核心机制：3 类对象 + Client-Server 架构</h4>
+<p>书中明确定义 MCP 的三种核心对象：</p>
+<ul>
+<li><b>① Tools</b>：可执行操作（如 <code>query_database</code>、<code>send_email</code>）</li>
+<li><b>② Resources</b>：可读数据（如文件、URI、数据库表）</li>
+<li><b>③ Prompts</b>：参数化的 prompt 模板，让 server 推荐 prompt 给 client</li>
+</ul>
+<p><b>架构</b>：<b>Host</b>（Claude Desktop / Cursor / VS Code 等）↔ <b>Client</b>（Host 内置的 MCP 客户端逻辑）↔ <b>Server</b>（你写的工具封装）。三方通过 <b>JSON-RPC</b> 通信，传输层支持 stdio 和 SSE / HTTP。</p>
+
+<h4>🛠 实战要点</h4>
+<ul>
+<li><b>能力可发现</b>：Client 启动时调用 <code>tools/list</code>、<code>resources/list</code>、<code>prompts/list</code>，动态发现 server 能力，不需要硬编码</li>
+<li><b>FastMCP</b>（书中推荐）：简化 Python 实现 MCP server，几行装饰器就能暴露工具</li>
+<li><b>MCP Tools for Genmedia Services</b>：Google Cloud 出品，让 Agent 接入 Imagen、Veo、Chirp 3 HD、Lyria 等生成媒体能力</li>
+<li><b>ADK 双向支持</b>：既能消费现有 MCP server，也能把自己的工具包装成 MCP server 暴露</li>
+</ul>
+
+<h4>⚠️ 易错点（书中犀利提醒）</h4>
+<ul>
+<li><b>"MCP 是 agentic interface 的契约"</b>——但很多开发者只是把<b>遗留 API 直接 wrap 一下</b>就当 MCP server。例如：ticketing 系统只能"按 ID 取详情"，Agent 要总结所有高优先级 ticket → 又慢又不准。<b>解药：底层 API 要为 Agent 重设计</b>，增加 filter / sort / batch 能力</li>
+<li><b>Schema 写得糙</b>：description 字段还是那个老问题——LLM 用不用对全看 description</li>
+<li><b>认证 / 权限隔离</b>：MCP server 暴露的工具可能被任何 client 调用，必须设计好访问控制</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>MCP 是 <b>Tool Use (Ch5)</b> 的标准化形态。与 <b>A2A (Ch15)</b> 互补：MCP 管"LLM ↔ 工具"，A2A 管"Agent ↔ Agent"。在 <b>Multi-Agent (Ch7)</b> 系统里，每个 Agent 可以是一个 MCP client，共享同一组 MCP servers 提供的工具池。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1e6XimYczKmhX9zpqEyxLFWPQgGuG0brp7Hic2sFl_qw/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 11 · Goal Setting and Monitoring</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/10ndlCB39BWjyFRWKpcoKib4vuPD1ojD-x0-ynMaf5uw/edit?tab=t.0" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">Agent 目标定义直接影响行为质量。<b>SMART 原则的 Agent 版：</b> Specific / Measurable / Achievable / Relevant / Time-bound。差："帮我写报告"；好："产出一份不超过 5 页的 Q1 销售分析报告，结构包含 [概述/数据/洞察/建议]，引用 ≥ 3 个数据源"。<br/><b>Monitoring 三件套：</b> ① <b>Progress tracking</b>（每个 subgoal 完成度）；② <b>Deviation detection</b>（发现偏离目标的动作时报警，防"随机漫步"）；③ <b>Self-evaluation</b>（完成后让 Agent 自评是否达成目标）。本章是 Guardrails 章节的前奏。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>给 Agent 一个<b>明确目标 + 进度监控机制</b>——把"被动响应任务"的反应式 Agent，升级为"主动追逐目标 + 自我评估"的目标导向 Agent。是 autonomous operation 的核心。</p>
+
+<h4>🧠 核心机制：SMART 原则 + 三大监控</h4>
+<p>书中明确借用经典 SMART 原则：</p>
+<ul>
+<li><b>S</b>pecific（具体）— "总结报告" ❌ vs "总结这份 5 页的 Q1 销售报告" ✅</li>
+<li><b>M</b>easurable（可衡量）— 必须有判断"做完了没"的客观标准</li>
+<li><b>A</b>chievable（可达成）— 工具 / 数据 / 时间在能力范围内</li>
+<li><b>R</b>elevant（相关）— 与上层目标对齐</li>
+<li><b>T</b>ime-bound（限时）— 设 deadline 防止无限 looping</li>
+</ul>
+<p><b>三大监控组件</b>：① <b>Progress Tracking</b>（每个 subgoal 完成度）；② <b>Deviation Detection</b>（偏离目标的动作早期报警）；③ <b>Self-Evaluation</b>（完成后自评是否真达成）。</p>
+
+<h4>🛠 实战要点（Google ADK 视角）</h4>
+<ul>
+<li><b>目标通过 agent instructions 传达</b>：在 system prompt / instructions 里明确写 SMART 目标</li>
+<li><b>State management + Tool interactions 实现监控</b>：每个工具调用都更新 state 里的进度字段</li>
+<li><b>反馈循环触发 replan</b>：监控发现偏离时，触发 <a href="#" onclick="document.querySelector('[data-week=\'3\']').click();return false;">Ch6 Planning</a> 的 replan 逻辑</li>
+<li><b>典型用例</b>：客服 Agent 必须"30 秒内回应" + "解决问题" + "不能透露隐私"——三类目标同时监控</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li><b>目标模糊</b>："做个好报告" → Agent 行为也模糊。<b>vague goal in, vague behavior out</b></li>
+<li><b>没有进度可视化</b> → 用户不知道 Agent 在干啥，体验差</li>
+<li><b>Self-evaluation 用同一模型</b> → self-preference bias 又来了（同 Reflection）</li>
+<li><b>Deviation Detection 阈值太松 / 太紧</b>：松了任 Agent 漂；紧了频繁误报</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>Goal Setting 是 <b>Planning (Ch6)</b> 的输入。Monitoring 是 <b>Evaluation (Ch19)</b> 的实时版（线上 vs 离线）。与 <b>Guardrails (Ch18)</b> 紧密配合——deviation detection 触发 guardrail 干预。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/10ndlCB39BWjyFRWKpcoKib4vuPD1ojD-x0-ynMaf5uw/edit?tab=t.0" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <h3><span class="icon">💡</span>核心概念</h3>
+  <details class="concept"><summary>Learning 的 3 种方式</summary>
+    <div class="body">详见摘要。<b>Memory-based learning 是 Agent 自我改进的主流方式</b>，比 fine-tuning 灵活、便宜、隐私友好。</div>
+  </details>
+  <details class="concept"><summary>MCP 解决什么问题</summary>
+    <div class="body">标准化"LLM ↔ 工具 / 数据"对接，让所有支持 MCP 的客户端共享同一个工具生态。</div>
+  </details>
+  <details class="concept"><summary>SMART 目标 + Monitoring 三件套</summary>
+    <div class="body">SMART：Specific / Measurable / Achievable / Relevant / Time-bound<br/>Monitoring：Progress / Deviation / Self-eval</div>
+  </details>
+
+  <h3><span class="icon">🛠</span>本周动手项目</h3>
+  <div class="handson">
+    <b class="title">项目 W5-A：写一个 MCP Server（强烈推荐）</b>
+    <p>把上周的"运营数据查询"工具集封装成 MCP server（Python SDK），然后在 Claude Desktop / Cursor 中接入测试。MCP 是 2026 年 Agent 工程师必备技能。</p>
+    <div class="stack"><span>mcp-python-sdk</span><span>JSON-RPC</span><span>~150 行</span></div>
+  </div>
+  <div class="handson">
+    <b class="title">项目 W5-B：自我学习 Document Reviewer</b>
+    <p>在 Week 2 的 Document Reviewer 上加 episodic memory：每次 review 完，把"问题类型 + 修改建议 + 用户是否采纳"存起来。下次 review 时先检索相似文档的过往经验，作为 few-shot 注入到 critic。</p>
+    <div class="stack"><span>Chroma</span><span>LangChain</span></div>
+  </div>
+
+  <h3><span class="icon">📝</span>本周自测题</h3>
+  <div class="quiz" data-quiz="w5q1">
+    <div class="q"><span class="qnum">Q1.</span>MCP 协议解决的核心问题是？</div>
+    <ul class="options">
+      <li data-correct="false">让 LLM 更聪明</li>
+      <li data-correct="true">标准化 LLM 与外部工具/数据的对接方式，避免每个客户端重复适配</li>
+      <li data-correct="false">降低 LLM 推理成本</li>
+      <li data-correct="false">让 Agent 支持多模态</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>MCP 是"协议层"标准，类似 LSP 之于 IDE。</div>
+  </div>
+  <div class="quiz" data-quiz="w5q2">
+    <div class="q"><span class="qnum">Q2.</span>MCP 三类核心对象不包括下面哪一个？</div>
+    <ul class="options">
+      <li data-correct="false">Tools</li>
+      <li data-correct="false">Resources</li>
+      <li data-correct="false">Prompts</li>
+      <li data-correct="true">Models</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：D。</b>模型由 Host 决定，不在 MCP 协议范围内。</div>
+  </div>
+  <div class="quiz" data-quiz="w5q3">
+    <div class="q"><span class="qnum">Q3.</span>Memory-based learning 相比 fine-tuning 的优势？</div>
+    <ul class="options">
+      <li data-correct="false">效果更好</li>
+      <li data-correct="true">可即时生效、可解释、可逐条删除（隐私友好）</li>
+      <li data-correct="false">不消耗 token</li>
+      <li data-correct="false">不需要标注</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>"用户要求删除自己的数据"——fine-tuned 权重几乎无法做到。</div>
+  </div>
+  <div class="quiz" data-quiz="w5q4">
+    <div class="q"><span class="qnum">Q4.</span>给 Agent 设目标时，下面哪个写法最有效？</div>
+    <ul class="options">
+      <li data-correct="false">"帮我做调研"</li>
+      <li data-correct="false">"做一个很好的调研报告"</li>
+      <li data-correct="true">"在 30 分钟内产出一份关于 [topic] 的调研报告，包含 [3 个竞品 / 市场规模 / 用户反馈] 三部分，引用至少 5 个 1 年内的来源"</li>
+      <li data-correct="false">"做一份让老板满意的调研"</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：C。</b>SMART 原则。</div>
+  </div>
+  <div class="quiz" data-quiz="w5q5">
+    <div class="q"><span class="qnum">Q5.</span>Goal Monitoring 中的 "Deviation Detection" 指的是？</div>
+    <ul class="options">
+      <li data-correct="false">监测 Agent 的延迟</li>
+      <li data-correct="true">监测 Agent 当前动作是否偏离原始目标（如越界、跑题、滥用工具）</li>
+      <li data-correct="false">监测 LLM 输出的统计分布</li>
+      <li data-correct="false">监测内存占用</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>防止 Agent "随机漫步"的关键机制。</div>
+  </div>
+</div>
+</div>
+
+<!-- ========== WEEK 6 ========== -->
+<div class="week-content" data-week="6">
+<div class="section">
+  <h2><span class="num">W6</span>Exception Handling + Human-in-the-Loop + RAG</h2>
+  <p class="desc">本周目标：把 Agent 从 demo 推向 production——会处理错误、知道何时找人、能用外部知识。</p>
+
+
+
+  <h3><span class="icon">📍</span>原文定位 + 章节摘要</h3>
+
+  <div class="source">
+    <b class="ch">Chapter 12 · Exception Handling and Recovery</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1C07AuMur6-infwE0viCp4QtAy_wWI-uceFm6MaYHQGk/edit?tab=t.0#heading=h.m2kk4kdjt6ir" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">Agent 异常的<b>五种类型 + 处理策略</b>：① Tool 失败（429 / timeout）→ 指数退避重试 + 降级；② LLM 输出格式错（不合 schema）→ 反馈给 LLM 让它自纠；③ 逻辑死循环（反复调用同一工具）→ 最大步数 + 循环模式检测；④ 超 context window → 触发 memory 压缩 / 任务拆分；⑤ 权限不足 → 转 Human-in-the-Loop。<br/><b>原则：</b> 能自己解决就别打扰人；解决不了立刻寻求人类协助；<b>永远不要静默失败</b>——一定要日志 + 通知。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>让 Agent 在<b>真实世界的各种故障下</b>不崩——从 tool 失败、API 限流、模型超时、context 溢出到权限不足，每种异常都有标准处置策略。是 Agent <b>从 demo 推向 production 的硬门槛</b>。</p>
+
+<h4>🧠 核心机制：错误检测 + 处理 + 恢复</h4>
+<p>书中把 Exception Handling 拆解为三阶段：</p>
+<ul>
+<li><b>① Error Detection</b>：识别异常——invalid tool output、API 错误码（404、500）、超长响应、不合预期 schema、其他 Agent 的监控信号</li>
+<li><b>② Handling Strategies</b>：① Logging（记录便于诊断）；② Retries（指数退避）；③ Fallbacks（降级到备用工具）；④ Graceful Degradation（降级输出）；⑤ Notifications（通知运维或用户）</li>
+<li><b>③ Recovery</b>：① State Rollback；② Diagnosis（找根因）；③ Self-Correction（Agent 自己调整 plan）；④ Escalation（转人工）</li>
+</ul>
+
+<h4>🛠 5 种典型异常 + 对策</h4>
+<ul>
+<li><b>① Tool 失败</b>（429 / timeout）→ 指数退避重试 + 降级到备用工具</li>
+<li><b>② LLM 输出格式错</b>（不合 JSON Schema）→ 把错误信息反馈给 LLM 让它自纠</li>
+<li><b>③ 逻辑死循环</b>（反复调用同一工具）→ 最大步数 + 模式检测 → 中断 + replan</li>
+<li><b>④ Context 溢出</b>→ 触发 memory 压缩 / 任务拆分</li>
+<li><b>⑤ 权限不足</b>→ 抛给 Human-in-the-Loop（escalation）</li>
+</ul>
+
+<h4>⚠️ 核心原则</h4>
+<ul>
+<li><b>能自己解决就别打扰人</b>，解决不了立刻寻求人类协助，<b>永远不要静默失败</b></li>
+<li><b>每次失败都要 log</b>——便于后续 root cause 分析和 retroactive testing</li>
+<li><b>区分 transient vs permanent 错误</b>：transient（如 network blip）适合 retry；permanent（如 invalid API key）retry 没意义，直接 escalate</li>
+</ul>
+
+<h4>📚 典型应用</h4>
+<ul>
+<li><b>客服 Bot</b>：数据库连不上时降级到 cached FAQ</li>
+<li><b>交易 Bot</b>：金融 API 错误时立即停止并通知交易员</li>
+<li><b>智能家居 Agent</b>：设备掉线时尝试重连 + 用户提示</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>Exception Handling 是 <b>Planning (Ch6)</b> 中 Replan 的触发器。Escalation 直接对接 <b>Human-in-the-Loop (Ch13)</b>。与 <b>Goal Setting (Ch11)</b> 的 monitoring 共享同一套基础设施（state tracking + alerting）。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1C07AuMur6-infwE0viCp4QtAy_wWI-uceFm6MaYHQGk/edit?tab=t.0#heading=h.m2kk4kdjt6ir" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 13 · Human-in-the-Loop</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1ImOZcw6yeb7a-uRBMNP1VdovYfyip4IdsAcLu9yue-0/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">三种触发模式：<b>① Approval Mode</b>（高风险动作前必须人审，如转账、发邮件、写库）；<b>② Confidence Mode</b>（Agent 置信度低于阈值时自动请求人类）；<b>③ Explicit Mode</b>（用户主动按"暂停 / 接管"按钮）。<br/><b>设计要点：</b> ① UI 反馈必须<b>即时</b>——人类等 30 秒没反应就失去耐心；② 上下文要<b>足量提供</b>给审核者——人不该当 ML 黑盒；③ 审核结果要<b>反哺训练</b>，让模型逐渐减少打扰频率。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>承认"<b>AI 不该完全自治</b>"——把人类智慧、判断力、责任感<b>有机嵌入</b>到 Agent 工作流，在高风险、伦理敏感、复杂决策场景下保持人类最终掌控。是负责任 AI 部署的核心机制。</p>
+
+<h4>🧠 核心机制：5 种 HITL 形态</h4>
+<p>书中明确列出 5 种 human 嵌入方式：</p>
+<ul>
+<li><b>① Human Oversight</b>：监控 Agent 表现（log review、real-time dashboard），不直接干预但有审计权</li>
+<li><b>② Intervention and Correction</b>：Agent 遇到困惑时主动请求人介入，人修正错误 / 补数据 / 指导后续</li>
+<li><b>③ Human Feedback for Learning</b>：人对输出打分（赞/踩）作为模型改进的 reward signal（RLHF 的精神）</li>
+<li><b>④ Decision Augmentation</b>：Agent 出分析和建议，<b>最终决策权在人</b>——典型如医疗诊断辅助</li>
+<li><b>⑤ Human-Agent Collaboration</b>：双向合作——日常处理交 Agent，创意 / 复杂判断交人</li>
+</ul>
+
+<h4>🛠 三种典型触发模式</h4>
+<ul>
+<li><b>Approval Mode</b>：高风险动作前<b>必须</b>人审（如转账、发邮件、写数据库）</li>
+<li><b>Confidence Mode</b>：Agent 置信度低于阈值时自动请求人类</li>
+<li><b>Explicit Mode</b>：用户主动按"暂停 / 接管"按钮</li>
+</ul>
+
+<h4>📐 实战要点</h4>
+<ul>
+<li><b>UI 反馈必须即时</b>：人等 30 秒没反应就失去耐心。给"思考中..."状态提示</li>
+<li><b>上下文要足量</b>：给审核者完整背景，不要让人当 ML 黑盒</li>
+<li><b>Escalation 政策必须明确</b>：什么情况升级、升级给谁、SLA 多久回复</li>
+<li><b>审核结果反哺训练</b>：人的纠正信号要回流到模型 / memory，让 Agent 下次少打扰</li>
+</ul>
+
+<h4>⚠️ 易错点（书中重点警示）</h4>
+<ul>
+<li><b>Scalability vs Accuracy trade-off</b>：HITL 越多越准，但人手是瓶颈——必须设计"何时一定要人"的明确规则</li>
+<li><b>依赖高技能领域专家</b>：医疗 / 法律 HITL 需要专业人员，不是随便招个 reviewer</li>
+<li><b>隐私问题</b>：把数据展示给人审核可能涉及 PII，需要 anonymization</li>
+<li><b>Trainer fatigue</b>：长时间审核 AI 输出会让人疲劳，准确率下降——需要轮岗机制</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>HITL 是 <b>Exception Handling (Ch12)</b> 中 escalation 的去处。与 <b>Guardrails (Ch18)</b> 互补——前者是兜底机制，后者是预防机制。Human feedback 是 <b>Learning & Adaptation (Ch9)</b> 的高质量信号源。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1ImOZcw6yeb7a-uRBMNP1VdovYfyip4IdsAcLu9yue-0/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 14 · Knowledge Retrieval (RAG)</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1v96Oobio6xDOqbK8ejsXjmOc4Dp2uoLMo5_gfJgi-NE/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">RAG 不是"接个向量库就完事"。<b>四个高频失败模式：</b> ① 检索召回差（embedding 选错或没 reranker）；② chunk 边界毁信息（事实被切两半）；③ LLM 不用检索结果（按训练知识答）；④ 幻觉引用（编造检索里没有的内容）。<br/><b>对应解药：</b> ① Reranker（Cohere / bge-reranker）；② 重叠 chunking + parent doc retrieval；③ "只能基于以下文档回答"严格 prompt；④ 引用校验（NLI 模型逐句对照 source）。<br/><b>Advanced RAG 升级路径：</b> Query Rewriting → Hybrid Search（dense + sparse / BM25）→ Reranking → HyDE → GraphRAG（多跳推理）。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>让 LLM <b>"先查书再答"</b>——通过检索外部知识库（文档、数据库、web），把<b>实时、领域特定、可溯源</b>的信息注入 prompt，克服 LLM 静态训练知识的局限，大幅减少幻觉。RAG 是 2023+ 最重要的 Agent 模式之一。</p>
+
+<h4>🧠 核心机制：Retrieval + Augmentation + Generation</h4>
+<p>书中给的标准流程：</p>
+<ol>
+<li><b>Query 进来</b>：不直接送 LLM</li>
+<li><b>语义检索</b>：把 query 转 embedding → 向量库找最相似的 chunks</li>
+<li><b>Augmentation</b>：检索结果 + 原 query 拼成"增强 prompt"</li>
+<li><b>LLM 生成</b>：基于增强 prompt 输出回答（可附引用）</li>
+</ol>
+
+<h4>🌟 RAG 的 4 大收益</h4>
+<ul>
+<li><b>① 实时知识</b>：突破训练时间 cutoff</li>
+<li><b>② 减少幻觉</b>：让模型基于检索内容回答而非凭空编造</li>
+<li><b>③ 领域专精</b>：用企业内部文档让通用 LLM 变专家</li>
+<li><b>④ 可溯源</b>：每个答案能指出来自哪份文档</li>
+</ul>
+
+<h4>📐 Advanced RAG（超越 Naive RAG）</h4>
+<ul>
+<li><b>Query Rewriting</b>：用 LLM 改写用户原始 query 让检索更准</li>
+<li><b>Hybrid Search</b>：dense (embedding) + sparse (BM25) 融合，对术语 / 缩写更友好</li>
+<li><b>Reranker</b>：粗排返回 100 条 → 用 cross-encoder 精排选前 5</li>
+<li><b>HyDE</b>：先让 LLM 生成"假设答案"，用假设答案的 embedding 去检索</li>
+<li><b>GraphRAG（书中专门介绍）</b>：构造知识图谱表达实体关系，能回答多跳推理问题（如"X 和 Y 有什么关联？"）</li>
+<li><b>Agentic RAG（书中重点）</b>：用 Agent 主动 reason + validate + refine 检索结果，而非被动用之</li>
+</ul>
+
+<h4>⚠️ 常见失败模式</h4>
+<ul>
+<li><b>① 检索召回差</b>：embedding 选错或没 reranker → 相关文档进不来。<b>这是最常见的 RAG 故障</b></li>
+<li><b>② Chunk 切坏</b>：把"金额是" + "100 万"切两半 → 事实丢失。解药：重叠 chunking 或 parent doc retrieval</li>
+<li><b>③ LLM 不用检索结果</b>：仍按训练知识答。解药："你只能基于以下文档回答"的严格 prompt</li>
+<li><b>④ 引用幻觉</b>：检索回来了 ABC，LLM 编造"根据文档 D"。解药：output validation——用 NLI 模型逐句对照 source</li>
+</ul>
+
+<h4>📚 典型应用</h4>
+<p>企业搜索、客服知识库、法律研究、个性化推荐、医疗文献查询。</p>
+
+<h4>🔗 与其他章节</h4>
+<p>RAG 与 <b>Memory (Ch8)</b> 技术栈高度重叠但目的不同：RAG 检索<b>外部</b>知识，Memory 检索<b>自身</b>经验。在 <b>Multi-Agent (Ch7)</b> 里一个 Retrieval Agent 经常独立存在。Agentic RAG 把 <b>Reflection (Ch4)</b> + <b>Planning (Ch6)</b> 引入检索流程。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1v96Oobio6xDOqbK8ejsXjmOc4Dp2uoLMo5_gfJgi-NE/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <h3><span class="icon">💡</span>核心概念</h3>
+  <details class="concept"><summary>Agent 异常的 5 种类型 + 处理策略</summary>
+    <div class="body">详见摘要。<b>原则：</b>能自己解决就别打扰人，解决不了立刻寻求人类协助，<b>永远不要静默失败</b>。</div>
+  </details>
+  <details class="concept"><summary>Human-in-the-Loop 的 3 种触发模式</summary>
+    <div class="body">Approval / Confidence / Explicit。详见摘要。</div>
+  </details>
+  <details class="concept"><summary>RAG 的 4 个失败模式 + Advanced RAG</summary>
+    <div class="body">详见摘要。<b>选型：</b>单文档问答用 naive；企业知识库用 hybrid + rerank；多跳推理用 GraphRAG。</div>
+  </details>
+
+  <h3><span class="icon">🛠</span>本周动手项目</h3>
+  <div class="handson">
+    <b class="title">项目 W6：企业知识库 Bot（RAG + HIL + 异常处理）</b>
+    <p>构造一个能回答企业内部知识问题的 Agent（任何你能拿到的文档都行，比如个人 Notion / Obsidian / 开源项目文档）：</p>
+    <p>· 把文档 ingest 进向量库<br/>
+    · 用 Query Rewriting + Hybrid Search + bge-reranker<br/>
+    · 输出附引用（source citation）<br/>
+    · 当 confidence &lt; 0.6 或问题涉及修改权限时，转 HIL → @on-call admin<br/>
+    · 所有工具调用带 retry + timeout 异常处理</p>
+    <div class="stack"><span>LangGraph</span><span>Chroma</span><span>bge-reranker</span><span>~600 行</span></div>
+  </div>
+
+  <h3><span class="icon">📝</span>本周自测题</h3>
+  <div class="quiz" data-quiz="w6q1">
+    <div class="q"><span class="qnum">Q1.</span>Agent 检测到"反复调用同一工具且参数相似"应该？</div>
+    <ul class="options">
+      <li data-correct="false">继续调用直到成功</li>
+      <li data-correct="true">触发"循环检测"机制——中断当前路径，replan 或寻求人类协助</li>
+      <li data-correct="false">忽略，相信 LLM 的判断</li>
+      <li data-correct="false">降低 temperature 再试</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>"工具调用环"是 Agent 卡死的常见原因。</div>
+  </div>
+  <div class="quiz" data-quiz="w6q2">
+    <div class="q"><span class="qnum">Q2.</span>下面哪个动作<b>最适合</b>用 Approval Mode HIL？</div>
+    <ul class="options">
+      <li data-correct="false">查询数据</li>
+      <li data-correct="false">总结邮件</li>
+      <li data-correct="true">替用户给客户发出正式邮件</li>
+      <li data-correct="false">读取文件</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：C。</b>不可逆 + 外部影响 + 高风险 → 必须人审。</div>
+  </div>
+  <div class="quiz" data-quiz="w6q3">
+    <div class="q"><span class="qnum">Q3.</span>Naive RAG 最常见的失败模式是？</div>
+    <ul class="options">
+      <li data-correct="false">向量库太慢</li>
+      <li data-correct="true">检索召回不足或 chunk 切坏，正确答案根本没进 LLM 上下文</li>
+      <li data-correct="false">LLM 不会用工具</li>
+      <li data-correct="false">JSON 解析失败</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>"检索都没召回，再聪明的 LLM 也答不对"——RAG 第一性原理。</div>
+  </div>
+  <div class="quiz" data-quiz="w6q4">
+    <div class="q"><span class="qnum">Q4.</span>HyDE (Hypothetical Document Embedding) 的核心思路？</div>
+    <ul class="options">
+      <li data-correct="false">把文档先翻译成英文再 embed</li>
+      <li data-correct="true">用 LLM 生成一个假设答案，用假设答案的 embedding 去检索真实文档</li>
+      <li data-correct="false">用图神经网络做检索</li>
+      <li data-correct="false">把文档摘要后再 embed</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>问题往往很短抽象，假设答案的形态更接近真实文档。</div>
+  </div>
+  <div class="quiz" data-quiz="w6q5">
+    <div class="q"><span class="qnum">Q5.</span>RAG 系统的"引用校验"主要防什么？</div>
+    <ul class="options">
+      <li data-correct="false">检索慢</li>
+      <li data-correct="true">LLM 在最终回答里编造检索结果中实际不存在的内容</li>
+      <li data-correct="false">向量库爆满</li>
+      <li data-correct="false">用户输入注入</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>"引用幻觉"是企业 RAG 上线前必须解决的问题。</div>
+  </div>
+</div>
+</div>
+
+<!-- ========== WEEK 7 ========== -->
+<div class="week-content" data-week="7">
+<div class="section">
+  <h2><span class="num">W7</span>A2A 通信 + 资源优化 + 推理 + 护栏</h2>
+  <p class="desc">本周目标：进入企业级 Agent 工程——Agent 间标准通信、成本优化、复杂推理、安全护栏。</p>
+
+
+
+  <h3><span class="icon">📍</span>原文定位 + 章节摘要</h3>
+
+  <div class="source">
+    <b class="ch">Chapter 15 · Inter-Agent Communication (A2A)</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1H6HmUYcy5kugt5gt7Kh2Zzb8C62d5pu36RsgMNDCX24/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">Google 主导的 Agent-to-Agent 通信协议。<b>A2A 与 MCP 的关系：互补，不冲突</b>。MCP 管"LLM ↔ 工具 / 数据"（Agent 内部能力扩展），A2A 管"Agent ↔ Agent"（跨 Agent 协作）。类比：MCP 是"USB-C"，A2A 是"HTTP"。<br/><b>核心能力：</b> Agent Card（能力宣告）、Task（任务对象）、Message（消息）、Streaming（流式响应）。让你的 LangChain Agent 调用别家 CrewAI Agent 的能力成为可能。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>Google 主导的开放<b>跨框架 Agent 通信协议</b>——让 LangChain Agent、CrewAI Agent、Google ADK Agent、自研 Agent 能通过<b>同一套 HTTP 标准</b>互相调用、协作完成任务。是 Agent 生态走向"互联互通"的关键基础设施。</p>
+
+<h4>🧠 核心机制：6 大概念支柱</h4>
+<p>书中详细介绍 A2A 的六大基础概念：</p>
+<ul>
+<li><b>① Core Actors</b>：Client Agent（发起方）+ Remote Agent（响应方）</li>
+<li><b>② Agent Card</b>：Agent 的"数字身份证"——JSON 文件，描述 capabilities、skills、endpoint、auth 等。其他 Agent 通过它发现你</li>
+<li><b>③ Agent Discovery</b>：根据 Agent Card 自动发现网络中的可用 Agent</li>
+<li><b>④ Communication & Tasks</b>：用 <code>tasks/send</code>（同步请求-响应）和 <code>tasks/sendSubscribe</code>（流式更新）</li>
+<li><b>⑤ Interaction Mechanisms</b>：支持同步、异步、流式、多轮对话（<code>input-required</code> 状态让 Agent 能要求补充信息）</li>
+<li><b>⑥ Security</b>：认证、授权、加密的标准做法</li>
+</ul>
+
+<h4>🌟 生态支持</h4>
+<p>书中列出的支持者（这是协议生死的关键）：Atlassian、Box、LangChain、MongoDB、Salesforce、SAP、ServiceNow。Microsoft 计划集成到 Azure AI Foundry 和 Copilot Studio。Auth0、SAP 也在做 A2A 集成。</p>
+
+<h4>🛠 实战要点</h4>
+<ul>
+<li><b>每个 Agent 一个独立 port</b>：模块化、独立部署、可水平扩展</li>
+<li><b>Trickle AI</b>：可视化 + 追踪 A2A 通信的工具，对 debug 多 Agent 系统极有帮助</li>
+<li><b>典型用例</b>：你的 Agent 需要发邮件 → 调用 Salesforce 的 A2A Agent；需要订机票 → 调用旅行平台的 A2A Agent</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li><b>认证 / 信任问题</b>：跨组织调用 Agent 时如何确认对方身份、如何限制权限——A2A 提供协议但不解决信任本身</li>
+<li><b>失败处理</b>：远程 Agent 挂了 / 慢了 / 给错答案——必须有 timeout、retry、fallback</li>
+<li><b>语义不一致</b>：你的 Agent 理解的"订单"和别家 Agent 不一样——需要 shared ontology</li>
+</ul>
+
+<h4>📐 A2A vs MCP（关键区分）</h4>
+<ul>
+<li><b>MCP</b>：管"LLM ↔ 工具 / 数据"（Agent 内部能力扩展）— 类比 USB-C</li>
+<li><b>A2A</b>：管"Agent ↔ Agent"（不同 Agent 跨组织 / 跨框架协作）— 类比 HTTP</li>
+<li><b>不冲突，互补</b>：一个 Agent 内部用 MCP 接工具，对外用 A2A 暴露能力</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>A2A 是 <b>Multi-Agent (Ch7)</b> 跨组织 / 跨技术栈的标准化形态。与 <b>MCP (Ch10)</b> 互补。在 <b>Resource-Aware Optimization (Ch16)</b> 中可用 A2A 做"远程便宜 Agent 处理简单任务"。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1H6HmUYcy5kugt5gt7Kh2Zzb8C62d5pu36RsgMNDCX24/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 16 · Resource-Aware Optimization</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1nAN58l6JjqEJHk43126uh7xgdEblCpcbsNUHXgtBmJQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">四个优化维度：<b>① Token 成本</b>（动态选模型：简单任务 Haiku，复杂任务 Opus）；<b>② Latency</b>（能并行就并行 + 预测式缓存）；<b>③ 内存</b>（长任务用 streaming summary）；<b>④ API 配额</b>（限速器 + 调用预算）。<br/><b>实战王牌——模型路由前置：</b> 先用便宜小模型判断任务难度，再决定主模型。可以把成本降 60% 而效果几乎不变。本章给出 token 预算追踪的工程实现。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>让 Agent <b>会"省钱省时"</b>——根据任务复杂度动态选模型 / 工具 / 路径，平衡输出质量与<b>计算 / 时间 / 金钱</b>资源消耗。在 GPT-4 / Claude Opus 一次调用动辄几毛甚至几块的时代，资源优化是<b>规模化部署的命脉</b>。</p>
+
+<h4>🧠 核心机制：多 Agent 路由架构</h4>
+<p>书中给的经典架构：</p>
+<ul>
+<li><b>① Router Agent</b>：先对 incoming query 做 complexity classification</li>
+<li><b>② Specialized Agents</b>：根据复杂度路由到合适模型——简单 query 用<b>便宜小模型</b>（如 Gemini Flash），复杂推理用<b>大模型</b>（如 Gemini Pro）</li>
+<li><b>③ Critique Agent</b>：评估回答质量，给 router 反馈，<b>持续优化路由策略</b></li>
+</ul>
+
+<h4>🛠 4 大优化维度</h4>
+<ul>
+<li><b>① Token 成本</b>：动态选模型 + prompt compression + 用 prompt caching（Anthropic / OpenAI 都支持）</li>
+<li><b>② Latency</b>：能并行就并行；常见 query 做预测式缓存</li>
+<li><b>③ 内存</b>：长任务用 streaming summary 而非全量历史</li>
+<li><b>④ API 配额</b>：限速器 + 调用预算追踪</li>
+</ul>
+
+<h4>💰 模型路由的实战公式</h4>
+<p>书中暗示的 cost-saving 套路：</p>
+<ul>
+<li><b>路由前置</b>：先用 GPT-3.5 / Haiku / Flash 这种便宜模型（成本是大模型的 1/10-1/30）判断任务难度</li>
+<li><b>根据难度调用</b>：简单 → Haiku；中等 → Sonnet；最复杂 → Opus</li>
+<li><b>实际效果</b>：可把 token 成本降 60-80% 而效果几乎不变（前提是 router 准）</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li><b>Router 自己很贵</b>：如果 router 用 GPT-4 来判断难度，加起来比直接用 GPT-4 还贵——router 必须用便宜模型</li>
+<li><b>难度分类错误</b>：把复杂任务 route 到小模型 → 答案差。需要 critique 反馈持续校准</li>
+<li><b>忽略 latency tail</b>：平均延迟低 ≠ p99 延迟低，p99 才决定用户体验</li>
+<li><b>缓存命中率监控</b>：缓存设了不监控 = 不知道实际收益</li>
+</ul>
+
+<h4>📐 Critique Agent 的角色</h4>
+<p>书中强调 critique 不只是给最终用户的"我说得好不好"——它是<b>反哺 router</b>的关键：当 critique 频繁报告"小模型答得不够好"时，router 自动提升下次相似 query 的模型选择。这是 self-correcting routing。</p>
+
+<h4>🔗 与其他章节</h4>
+<p>Resource-Aware Optimization 大量复用 <b>Routing (Ch2)</b> 思想。Critique Agent 本质是 <b>Reflection (Ch4)</b> 的应用。在 <b>Multi-Agent (Ch7)</b> 框架内自然实现。<b>Evaluation (Ch19)</b> 提供长期的 router 性能数据。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1nAN58l6JjqEJHk43126uh7xgdEblCpcbsNUHXgtBmJQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 17 · Reasoning Techniques</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1Yt1W_hLaC6ZNgJXfT4W6NrCL4TzNVdKOX50kgpHiIq4/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">主流推理技巧：<b>CoT</b>（让模型显式写思考过程）、<b>ToT</b>（Tree-of-Thoughts：搜索多个分支并剪枝，token 消耗 5-10×）、<b>Self-Consistency</b>（多次采样投票）、<b>Reflection</b>（见 Week 2）、<b>Program-Aided Reasoning</b>（LLM 写代码 → 执行 → 拿结果，数学任务近 100% 准确）、<b>Reasoning Models</b>（o1 / o3 / Claude thinking 等模型内置 reasoning）。<br/><b>选型：</b> 算数 / 逻辑 → Program-Aided；开放分析 → CoT + Self-Consistency；战略决策 → ToT。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>把 LLM 的"思考过程"<b>显式化、结构化、可纠错</b>——通过 CoT、ToT、Self-Consistency、Self-Correction、Program-Aided、ReAct 等技巧，让 Agent 处理需要多步逻辑、决策权衡、外部交互的复杂任务。这是 Agent 智能上限的决定性章节。</p>
+
+<h4>🧠 核心范式速览（按从简单到复杂排列）</h4>
+<ul>
+<li><b>① CoT (Chain-of-Thought)</b>：让模型显式写"我先想 A，再想 B，所以是 C"——Agent 的"内心独白"。简单加一句"Let's think step by step"就有效</li>
+<li><b>② Self-Consistency</b>：CoT 跑 N 次（高 temperature），选多数投票答案。对推理 / 数学题特别有效</li>
+<li><b>③ ToT (Tree-of-Thoughts)</b>：搜索多个 reasoning 分支并剪枝，能"回溯"——避免单链推理一错到底。代价：token 5-10×</li>
+<li><b>④ Self-Correction</b>：Agent 先答 → 自检 → 修正（Reflection 的推理版）</li>
+<li><b>⑤ Program-Aided Reasoning</b>：LLM 写 Python 代码 → 执行 → 拿结果。对算术 / 统计 / 数据处理近 100% 准</li>
+<li><b>⑥ ReAct (Reason + Act)</b>：交替输出 Thought / Action / Observation，让推理过程可见可纠，是<b>整本书最重要的范式之一</b></li>
+<li><b>⑦ Reasoning Models</b>：o1 / o3 / Claude thinking——模型内置 reasoning，不需要 CoT prompt 也能深度思考</li>
+</ul>
+
+<h4>📈 Scaling Inference Law（书中重要概念）</h4>
+<p>"Agent 的表现不只取决于模型大小，更取决于 <b>allocated thinking time</b>"——给 Agent 更多推理预算（更多 token 、更多步、更多 ToT 分支），即便用同样模型，结果质量显著提升。这彻底改变了"必须用最大模型"的固有思路。</p>
+
+<h4>🛠 实战选型</h4>
+<ul>
+<li><b>算术 / 逻辑 / SQL / 数据处理</b>→ Program-Aided（让代码执行做精确计算）</li>
+<li><b>开放分析 / 文本理解</b>→ CoT + Self-Consistency</li>
+<li><b>需要工具交互的任务</b>→ ReAct</li>
+<li><b>战略决策 / 路径规划</b>→ ToT</li>
+<li><b>多步任务 + 不确定</b>→ ReAct + Self-Correction 组合</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li><b>用 CoT 做算术</b>—— LLM 算 7×13=91 有时也错。Program-Aided 才对</li>
+<li><b>ToT 不剪枝</b>—— token 爆炸，成本失控</li>
+<li><b>ReAct 没设最大步数</b>—— Agent 在工具间"鬼打墙"</li>
+<li><b>Reasoning Models 上当成普通 LLM 用</b>——o1/o3 这类模型不该再加 CoT prompt，会冗余</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>Reasoning Techniques 是 <b>Planning (Ch6)</b>、<b>Tool Use (Ch5)</b>、<b>Reflection (Ch4)</b> 的"技巧集合"。ReAct 是 Planning + Tool Use 的具体范式。Self-Consistency 是 <b>Parallelization (Ch3)</b> 在推理上的应用。Program-Aided 实质是 Tool Use 的特例。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1Yt1W_hLaC6ZNgJXfT4W6NrCL4TzNVdKOX50kgpHiIq4/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 18 · Guardrails / Safety Patterns</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1Gpc5af_okze1kprRLohP6-81e1KwL6HggjeLvxQyIuk/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">三层防护：<b>① Input Guardrails</b>（检测 prompt 注入、PII、违规内容）；<b>② Output Guardrails</b>（检测幻觉、敏感泄露、JSON schema 违规）；<b>③ Action Guardrails</b>（高风险工具调用前的策略检查：白名单、金额上限、权限校验）。<br/><b>关键原则：</b> 护栏必须<b>独立于 Agent 主模型</b>——同一个 LLM 既当裁判又当运动员等于没护栏。可选工具：NVIDIA NeMo Guardrails、Guardrails AI、Llama Guard。<br/>本章还讨论了"对抗性输入"——越狱 prompt、间接注入（如让 Agent 读一封含恶意指令的邮件）。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>给 Agent 装"<b>多层防护栏</b>"——防 prompt injection、防有害输出、防数据泄露、防越权操作、防越狱。Guardrails 是<b>负责任 AI 部署的最低门槛</b>，没有它任何 Agent 都不应该上线。</p>
+
+<h4>🧠 核心机制：三层防御</h4>
+<p>书中明确列出 Guardrails 的三层架构：</p>
+<ul>
+<li><b>① Input Guardrails</b>：检测 prompt 注入、PII 泄露请求、违规内容、越狱尝试（如经典"ignore all previous instructions"）</li>
+<li><b>② Output Guardrails</b>：检测幻觉、敏感信息泄露、JSON schema 违规、有害言论、品牌敏感词</li>
+<li><b>③ Action Guardrails</b>：高风险动作前的策略检查——白名单（如只能调特定 API）、金额上限（转账≤500）、权限校验（用户身份核验）</li>
+</ul>
+
+<h4>🛡 5 大实现手段</h4>
+<ul>
+<li><b>① Input validation</b>：分类器 + 规则检测恶意 query</li>
+<li><b>② Output filtering</b>：用专门模型（如 Llama Guard、OpenAI Moderation）筛选输出</li>
+<li><b>③ Behavioral prompting</b>：在 system prompt 里明确写"绝不讨论 X"、"必须用礼貌语言"等</li>
+<li><b>④ Tool use restrictions</b>：限制 Agent 能调用哪些工具、什么参数范围</li>
+<li><b>⑤ External moderation</b>：把内容送给独立审核服务</li>
+</ul>
+
+<h4>📐 黄金原则（书中反复强调）</h4>
+<ul>
+<li><b>Guardrails 必须独立于主 Agent 模型</b>——同一个 LLM 既当"裁判"又当"运动员"等于没护栏。同样的偏见 / 漏洞 / 攻击面会同步存在</li>
+<li><b>多种技巧组合</b>使用比依赖单一手段更稳——纵深防御</li>
+<li><b>持续监控 + 迭代</b>：攻击方式在演化，guardrails 也要</li>
+<li><b>把 Agent 当传统软件工程对待</b>：fault tolerance、state management、robust testing——这些经典工程实践不能因为是 AI 就忽略</li>
+</ul>
+
+<h4>🔧 可选工具栈</h4>
+<ul>
+<li><b>NVIDIA NeMo Guardrails</b>：开源 framework，用 Colang 语言定义对话流和安全规则</li>
+<li><b>Guardrails AI</b>：Python 库，校验 LLM 输出结构和内容</li>
+<li><b>Llama Guard</b>：Meta 开源的内容审核模型，专门做 Input/Output filtering</li>
+<li><b>OpenAI Moderation API</b>：成熟的有害内容分类服务</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li><b>"对抗性输入"考虑不足</b>：jailbreak prompt、间接注入（如让 Agent 读一封含恶意指令的邮件）</li>
+<li><b>过度防护</b>：把 Agent 锁太死导致正常需求被拒，用户体验差</li>
+<li><b>Guardrail 自己出错</b>：分类器误判正常内容为违规（false positive）</li>
+<li><b>没 audit log</b>：被攻击后无法追踪手段</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>Guardrails 与 <b>Goal Setting / Monitoring (Ch11)</b> 的 deviation detection 联动——前者预防，后者侦测。Action guardrails 与 <b>Human-in-the-Loop (Ch13)</b> 的 approval mode 紧密配合。<b>Evaluation (Ch19)</b> 测的是 guardrails 是否有效。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1Gpc5af_okze1kprRLohP6-81e1KwL6HggjeLvxQyIuk/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <h3><span class="icon">💡</span>核心概念</h3>
+  <details class="concept"><summary>A2A vs MCP：两个协议的分工</summary>
+    <div class="body">2025+ 两个并存协议，<b>不冲突</b>：MCP 管"LLM ↔ 工具/数据"，A2A 管"Agent ↔ Agent"。</div>
+  </details>
+  <details class="concept"><summary>Resource-Aware Optimization 的核心套路</summary>
+    <div class="body"><b>"路由前置"</b>——先用便宜模型判断任务难度，再决定后续用什么模型。可以把成本降 60%。</div>
+  </details>
+  <details class="concept"><summary>主流 Reasoning 技巧速览</summary>
+    <div class="body">CoT / ToT / Self-Consistency / Program-Aided / Reasoning Models。<br/>选型：算数 → Program-Aided；战略 → ToT；推理 → CoT + Self-Consistency。</div>
+  </details>
+  <details class="concept"><summary>Guardrails 的 3 层防护</summary>
+    <div class="body">① Input；② Output；③ Action。<br/>关键：<b>护栏必须独立于 Agent 主模型</b>。</div>
+  </details>
+
+  <h3><span class="icon">🛠</span>本周动手项目</h3>
+  <div class="handson">
+    <b class="title">项目 W7：成本优化版协作系统</b>
+    <p>升级 Week 4 的多 Agent 系统：</p>
+    <p>· 加 <b>模型路由</b>：简单问答用 Haiku，主要生成用 Sonnet，关键 review 用 Opus<br/>
+    · 加 <b>3 层 Guardrails</b>：input 防 prompt injection、output 防泄露、action 防越权写入<br/>
+    · 加 <b>Reasoning 增强</b>：技术可行性评估用 Program-Aided（让 Engineer Agent 写 Python 估算成本和 RPS）<br/>
+    · 实现一个 A2A 接口：让 PM Agent 能被外部系统通过 HTTP 调用</p>
+    <div class="stack"><span>LangGraph</span><span>NeMo Guardrails</span><span>FastAPI</span></div>
+  </div>
+
+  <h3><span class="icon">📝</span>本周自测题</h3>
+  <div class="quiz" data-quiz="w7q1">
+    <div class="q"><span class="qnum">Q1.</span>MCP 和 A2A 的关系？</div>
+    <ul class="options">
+      <li data-correct="false">A2A 是 MCP 的升级版</li>
+      <li data-correct="false">两者互斥，二选一</li>
+      <li data-correct="true">两者互补：MCP 管 Agent 内"用工具"，A2A 管 Agent 间"协作"</li>
+      <li data-correct="false">两者都已废弃</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：C。</b>一个 Agent 内部用 MCP 接工具，对外用 A2A 暴露能力，是企业 Agent 标配。</div>
+  </div>
+  <div class="quiz" data-quiz="w7q2">
+    <div class="q"><span class="qnum">Q2.</span>Resource-Aware Optimization 中"模型路由"最经济的形态？</div>
+    <ul class="options">
+      <li data-correct="false">所有任务都用最贵的模型</li>
+      <li data-correct="true">用便宜小模型先判断任务复杂度，再决定主模型</li>
+      <li data-correct="false">永远用最便宜的模型</li>
+      <li data-correct="false">随机选模型</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>"分类器+主模型"两段式是最普遍的 cost-saving 模式。</div>
+  </div>
+  <div class="quiz" data-quiz="w7q3">
+    <div class="q"><span class="qnum">Q3.</span>对一个"5 + 7 等于多少"类型的算术任务，下列哪种推理方式最稳？</div>
+    <ul class="options">
+      <li data-correct="false">CoT</li>
+      <li data-correct="false">ToT</li>
+      <li data-correct="true">Program-Aided（让 LLM 写代码并执行）</li>
+      <li data-correct="false">Self-Consistency</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：C。</b>算术 / 数据处理交给代码执行，准确率几乎 100%。</div>
+  </div>
+  <div class="quiz" data-quiz="w7q4">
+    <div class="q"><span class="qnum">Q4.</span>Guardrails 设计的<b>原则性错误</b>是？</div>
+    <ul class="options">
+      <li data-correct="false">既做 input 又做 output 防护</li>
+      <li data-correct="false">使用专门的小模型做分类</li>
+      <li data-correct="true">用主 Agent 自己当 guardrail（自己审自己）</li>
+      <li data-correct="false">设置 action 级别白名单</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：C。</b>"自己当裁判"等于没护栏——同样的偏见 / 漏洞会同步存在。</div>
+  </div>
+  <div class="quiz" data-quiz="w7q5">
+    <div class="q"><span class="qnum">Q5.</span>ToT (Tree-of-Thoughts) 比 CoT 强在哪里？</div>
+    <ul class="options">
+      <li data-correct="false">速度更快</li>
+      <li data-correct="true">能搜索多个推理路径并剪枝，避免单链推理错到底</li>
+      <li data-correct="false">不需要 LLM</li>
+      <li data-correct="false">成本更低</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>代价是 token 消耗 5-10 倍；只在高价值复杂决策上用。</div>
+  </div>
+</div>
+</div>
+
+<!-- ========== WEEK 8 ========== -->
+<div class="week-content" data-week="8">
+<div class="section">
+  <h2><span class="num">W8</span>Evaluation + Prioritization + Exploration + 综合项目</h2>
+  <p class="desc">本周目标：学会怎么测一个 Agent 真的好不好；完成一个集大成的 capstone 项目。</p>
+
+
+
+  <h3><span class="icon">📍</span>原文定位 + 章节摘要</h3>
+
+  <div class="source">
+    <b class="ch">Chapter 19 · Evaluation and Monitoring</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1G3zOZM2ZOd0gUp5dy66FUjKMOcALh9l-JpvPxgGMm8w/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary"><b>三层评估：</b> ① <b>Component-level</b>（单步 LLM 调用、单工具准确率，用静态数据集）；② <b>Trajectory-level</b>（整个执行轨迹是否合理：步骤数、工具选择、是否绕路）；③ <b>End-to-end</b>（最终输出是否满足目标）。<br/><b>常见错误：</b>只测端到端——失败的 trace 不知道哪步坏了。三层都要测。<br/><b>LLM-as-Judge 正确用法：</b> 不要用同一模型同时生成和判断（自我偏好）；给 judge 明确 rubric；让 judge 必须说理由；定期用人类标注校准。<br/><b>监控指标：</b> 任务成功率、平均步数、平均成本、p99 延迟、用户满意度、tool error 率、loop 检测率。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>让 Agent 不是"<b>上线了就完事</b>"——通过结构化评估 + 实时监控，持续衡量 Agent 的<b>有效性、效率、合规性</b>，发现退化、捕获异常、为持续改进提供数据。是 Agent <b>生命周期管理</b>的最后一块拼图。</p>
+
+<h4>🧠 核心机制：3 层评估</h4>
+<p>书中强调评估必须分层做，<b>只测端到端是不够的</b>：</p>
+<ul>
+<li><b>① Component-level</b>：单步 LLM 调用、单个工具的准确率（用静态数据集做单元测试）</li>
+<li><b>② Trajectory-level</b>：整个执行轨迹是否合理——步骤数、工具选择、是否绕路。<b>这是 Agent 特有的评估维度</b>，对照"理想 ground-truth 轨迹"找偏差</li>
+<li><b>③ End-to-end</b>：最终输出是否满足用户目标（任务成功率、用户满意度）</li>
+</ul>
+
+<h4>📐 LLM-as-Judge（重点技巧）</h4>
+<p>用 LLM 自动评估输出已是工业标配，但有坑：</p>
+<ul>
+<li><b>不要</b>用同一个模型同时生成和判断 — self-preference bias 又来了</li>
+<li><b>给 judge 明确的 rubric</b>："评分 1-5，依据下列 5 个维度"</li>
+<li><b>让 judge 必须说理由</b>（chain-of-thought judge）— 提升准确性 + 可审计</li>
+<li><b>定期用人类标注校准</b> — 防止 judge drift</li>
+</ul>
+
+<h4>🛠 实战要点（ADK 视角）</h4>
+<ul>
+<li><b>Test Files</b>：定义单条用例，做<b>单元测试</b>（component-level）</li>
+<li><b>EvalSet Files</b>：定义场景，做<b>集成测试</b>（trajectory + end-to-end）</li>
+<li><b>3 种执行方式</b>：① Web UI（交互式 debug）；② pytest（CI/CD 集成）；③ CLI（批量自动化）</li>
+<li><b>核心指标</b>：accuracy（响应正确率）+ latency（响应延迟）+ token usage（成本）+ trajectory quality（路径合理性）</li>
+</ul>
+
+<h4>📊 监控的实战指标</h4>
+<ul>
+<li>任务成功率（最终输出是否满足目标）</li>
+<li>平均步数 / 平均成本（resource consumption）</li>
+<li>p99 延迟（tail latency 决定用户体验）</li>
+<li>Tool error rate（工具失败率）</li>
+<li>Loop detection rate（死循环触发率）</li>
+<li>HITL escalation rate（升级人工率）</li>
+<li>User satisfaction score（用户主动评分）</li>
+</ul>
+
+<h4>⚠️ 常见错误</h4>
+<ul>
+<li><b>只测最终输出</b>——失败的 trace 不知道哪步坏；好的输出也可能来自"坏轨迹+运气"</li>
+<li><b>没有 A/B testing</b>——模型 / prompt 改了不知道改善还是退步</li>
+<li><b>没监控 data drift</b>——线上输入分布偷偷变化，模型悄悄退化</li>
+<li><b>评估集不更新</b>——3 个月前的 test cases 已经不能代表当前场景</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>Evaluation 是 <b>Goal Setting (Ch11)</b> 的离线 / 长期版本。是 <b>Learning & Adaptation (Ch9)</b> 的反馈源（评估结果驱动学习）。监测 <b>Guardrails (Ch18)</b> 的实际效果。在 <b>Multi-Agent (Ch7)</b> 中特别难做（要评估"整体协作质量"而非单个 Agent）。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1G3zOZM2ZOd0gUp5dy66FUjKMOcALh9l-JpvPxgGMm8w/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 20 · Prioritization</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1qyXxGM2hNqW_qjXuBFxrEUeoYVO79BoW1ogKu1bfdCY/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">Agent 多任务时如何排序：<b>① Urgency</b>（deadline 近的优先）；<b>② Impact</b>（影响后续多少步骤）；<b>③ Uncertainty</b>（先做最不确定的，避免后期返工）；<b>④ Dependency</b>（被依赖的先做）。<br/><b>实战模板：</b> 让 Agent 在 plan 阶段就输出每个 task 的 <code>{urgency, impact, uncertainty, deps}</code>，executor 按综合分数取任务。本章还讨论了"动态重排"——执行过程中根据中间结果重新打分。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>让 Agent 在<b>"多个相互冲突的任务和目标"</b>面前做出合理选择——综合 urgency、importance、dependencies、resource cost 等维度，决定先做什么、跳过什么、停掉什么。是 Agent 从"按命令执行"升级为"自主决策"的关键能力。</p>
+
+<h4>🧠 核心机制：4 大评估维度</h4>
+<p>书中明确列出 prioritization 的判断标准：</p>
+<ul>
+<li><b>① Urgency</b>（紧急度）— deadline、时效性</li>
+<li><b>② Importance</b>（重要性）— 对主目标的影响程度</li>
+<li><b>③ Dependencies</b>（依赖）— 这个任务是否是其他任务的前提</li>
+<li><b>④ Resource Availability</b>（资源可用性）— 需要的工具 / 数据 / 算力是否就绪</li>
+<li><b>⑤ Cost/Benefit</b>（成本-收益分析）— 投入产出比</li>
+<li><b>⑥ User Preferences</b>（用户偏好）— 个性化场景下用户的偏好排序</li>
+</ul>
+
+<h4>🛠 实现 4 步法</h4>
+<ol>
+<li><b>Criteria Definition</b>：明确各维度的定义和权重</li>
+<li><b>Task Evaluation</b>：对每个候选任务按 criteria 打分（用规则 / LLM reasoning / hybrid）</li>
+<li><b>Scheduling / Selection Logic</b>：算法（queue、A*、heuristic）选出下一步</li>
+<li><b>Dynamic Re-prioritization</b>：环境变化时<b>重新评分</b>——这是关键能力，让 Agent 能在 deadline 临近、紧急事件出现时立刻调整</li>
+</ol>
+
+<h4>📐 两层优先级</h4>
+<ul>
+<li><b>Strategic（战略层）</b>：长期目标排序——比如季度 OKR</li>
+<li><b>Tactical（战术层）</b>：当下下一步动作选择——比如"先回复邮件还是先开会"</li>
+</ul>
+
+<h4>🛠 实战 prompt 模板</h4>
+<p>书中暗示的工业实践：让 Agent 在 plan 阶段就<b>输出每个 task 的 priority 字段</b>，executor 按综合分数取任务。</p>
+<pre style="font-size:11px">{
+  "task": "...",
+  "urgency": 0.9,      // 0-1
+  "impact": 0.7,
+  "uncertainty": 0.3,
+  "deps": ["task_id_1"],
+  "score": 0.78        // 综合分
+}</pre>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li><b>权重设错</b>：所有任务 urgency 都打满 → 退化为先到先做</li>
+<li><b>不做 dynamic re-prioritization</b>：环境变了 Agent 还在执行老优先级</li>
+<li><b>循环依赖</b>：A 等 B，B 等 A → 死锁。需要 cycle detection</li>
+<li><b>过度重排</b>：每个 tick 都重新排，本身就是 overhead。需要事件触发式重排</li>
+</ul>
+
+<h4>📚 典型应用</h4>
+<ul>
+<li><b>个人助理 Agent</b>：邮件 / 日历 / 待办综合排序</li>
+<li><b>客服 Agent</b>：多通道工单并发时决定先处理谁</li>
+<li><b>运维 Agent</b>：多告警同时到来时按 severity + impact 排</li>
+<li><b>电商推荐 Agent</b>：多商品候选时按用户偏好 + 库存 + 利润排</li>
+</ul>
+
+<h4>🔗 与其他章节</h4>
+<p>Prioritization 是 <b>Planning (Ch6)</b> 的执行层细化——plan 给出 task 列表，prioritization 决定顺序。与 <b>Goal Setting (Ch11)</b> 紧密关联（goal 决定 importance 权重）。在 <b>Multi-Agent (Ch7)</b> Supervisor 内部往往就是个 prioritizer。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1qyXxGM2hNqW_qjXuBFxrEUeoYVO79BoW1ogKu1bfdCY/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">Chapter 21 · Exploration and Discovery</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1zeeMVTqjqRIli6G9MMWThhoQhvKqLOjJF2EHHUXLhdk/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本章 →</a></div>
+    <div class="summary">高级 Agent 不止"完成任务"，还能"发现任务"。三种范式：<b>① Curiosity-driven</b>（识别知识盲点，主动检索 / 提问）；<b>② Hypothesis-driven</b>（生成假设 → 设计实验验证）；<b>③ Anomaly Detection</b>（发现数据中的异常作为后续动作触发器）。<br/><b>典型应用：</b> 科学研究助手（AutoGen + Code Interpreter）、自动数据洞察（DataAgent）、漏洞挖掘（fuzz Agent）、自动 A/B 测试设计助手。本章是全书最具想象力的一章，预示了未来 3-5 年 Agent 的发展方向。</div>
+    <details class="deep-summary">
+  <summary>📖 展开本章深度摘要（基于 PDF 原文）</summary>
+  <div class="deep-summary-body">
+<h4>🎯 一句话定位</h4>
+<p>让 Agent <b>"主动探索未知"</b>——不再被动等指令，而是自主识别知识盲点、生成假设、设计实验、发现"unknown unknowns"。这是<b>真正的 Agentic AI</b> 的终极形态，预示了未来 3-5 年 Agent 的发展方向。</p>
+
+<h4>🧠 核心机制：三种探索范式</h4>
+<ul>
+<li><b>① Curiosity-driven Exploration</b>：识别知识盲点（"我不知道的部分"），主动检索 / 提问。类比一个好奇的研究员</li>
+<li><b>② Hypothesis-driven Discovery</b>：先生成假设 → 设计实验 → 收集数据 → 验证 / 推翻。这是<b>科学方法</b>的自动化</li>
+<li><b>③ Anomaly Detection-driven</b>：发现数据中的异常作为后续动作的触发器——典型如运维 Agent 看 metric 异常 → 自动追查根因</li>
+</ul>
+
+<h4>🌟 前沿案例（书中重点）</h4>
+<ul>
+<li><b>Google Co-Scientist</b>：能自主生成科研假设、设计实验、辅助人类科学家——已经在生物医学领域帮研究者找到新候选药物</li>
+<li><b>Agent Laboratory</b>：多 Agent 框架，分饰研究员、实验员、写作员等角色，自动完成文献综述 → 实验 → 报告全流程</li>
+<li><b>AlphaEvolve</b>（与 Ch9 学习章呼应）：探索 + 进化算法发现新算法</li>
+</ul>
+
+<h4>🛠 实现模式：多 Agent 模拟科学方法</h4>
+<p>书中描绘的典型架构：</p>
+<ul>
+<li><b>Hypothesis Generator Agent</b>：基于已知文献生成多个假设</li>
+<li><b>Critic Agent</b>：对假设的合理性、可验证性、新颖性打分</li>
+<li><b>Experiment Designer Agent</b>：把假设转换为可执行的实验 / 查询 / 测试</li>
+<li><b>Evolver Agent</b>：从结果中挑出 promising 假设，进化（变异 / 组合）成下一代</li>
+<li><b>Report Writer Agent</b>：把整个过程整理成可读报告</li>
+</ul>
+
+<h4>📐 典型应用</h4>
+<ul>
+<li><b>科学研究助手</b>：自动文献综述、假设生成、实验设计</li>
+<li><b>自动数据洞察</b>（DataAgent 类）：从公司数据中主动发现异常和机会，而非等人提问</li>
+<li><b>漏洞挖掘 Agent</b>（fuzz Agent）：自主探索代码 / 系统的脆弱点</li>
+<li><b>A/B 测试设计助手</b>：根据业务指标自动提出值得测的假设</li>
+<li><b>自动 prompt 工程</b>：尝试新 prompt 变体并自评效果</li>
+</ul>
+
+<h4>⚠️ 易错点</h4>
+<ul>
+<li><b>探索 vs 利用平衡</b>：纯探索浪费资源，纯利用没新发现。需要 ε-greedy / UCB 类算法平衡</li>
+<li><b>假设质量不可控</b>：生成的假设很多是低质量的——必须有强 Critic 过滤</li>
+<li><b>无法验证的假设</b>：超出可用工具 / 数据范围。需要先评估"是否可测"</li>
+<li><b>计算成本爆炸</b>：探索可以无限消耗资源 — 必须设 budget</li>
+</ul>
+
+<h4>🌌 哲学意义</h4>
+<p>书中把这一章放在最后，是因为 Exploration & Discovery 代表了 <b>Agent 的真正"能动性"</b>——从"完成任务"到"发现任务"，从"按指令做"到"自主探索"。这才是 Antonio Gulli 心目中"真正 Agentic"的样子。</p>
+
+<h4>🔗 与其他章节</h4>
+<p>Exploration 是 <b>Planning (Ch6)</b> + <b>Reasoning (Ch17)</b> + <b>Multi-Agent (Ch7)</b> + <b>Learning (Ch9)</b> 的集大成应用。Hypothesis generation 是 <b>Reflection (Ch4)</b> 的反向——从"批判已有"转向"提出新的"。这一章是<b>整本书的高潮</b>，所有前 20 个模式在这里融汇。</p>
+  </div>
+</details>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1zeeMVTqjqRIli6G9MMWThhoQhvKqLOjJF2EHHUXLhdk/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本章</a>
+      <a href="https://drive.google.com/drive/u/0/folders/1Y3U3IrYCiJ3E45Z8okR5eCg7OPnWQtPV" target="_blank" rel="noopener noreferrer">→ 配套代码 (Drive 文件夹)</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">附录 A · Advanced Prompting Techniques</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/1V7EKEWibOH6IhHD_PtbFZiml492-2191jDQCcTkhtTI/edit?usp=sharing" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本附录 →</a></div>
+    <div class="summary">高级 Prompt 工程技巧：role prompting、constraint prompting、negative prompting、structured output forcing、prompt compression（用 LLMLingua 等工具）、prompt caching（Anthropic / OpenAI 都支持）。每个技巧附 before / after 对比例子。</div>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/1V7EKEWibOH6IhHD_PtbFZiml492-2191jDQCcTkhtTI/edit?usp=sharing" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本附录</a>
+    </div>
+  </div>
+
+  <div class="source">
+    <b class="ch">附录 C · Agentic Frameworks 横向对比</b>
+    <div class="anchor">📍 <b style="color:var(--blue)">直达此章节：</b><a href="https://docs.google.com/document/d/151rGsiEYOkXUcNDRus_N8TxxuvjoyTDViBhzt9z0Mfw/edit?tab=t.0#heading=h.8y2llpsk10ds" target="_blank" rel="noopener noreferrer">点击在 Google Doc 中打开本附录 →</a></div>
+    <div class="summary">主流框架对比：LangChain / LangGraph、AutoGen、CrewAI、Google ADK、LlamaIndex Workflows、Pydantic AI、OpenAI Swarm。维度：抽象层级、可观测性、生产成熟度、学习曲线、社区生态。选型建议矩阵。</div>
+    <div class="links">
+      <a href="https://docs.google.com/document/d/151rGsiEYOkXUcNDRus_N8TxxuvjoyTDViBhzt9z0Mfw/edit?tab=t.0#heading=h.8y2llpsk10ds" target="_blank" rel="noopener noreferrer">→ 打开 Google Doc 本附录</a>
+    </div>
+  </div>
+
+  <h3><span class="icon">💡</span>核心概念</h3>
+  <details class="concept"><summary>Agent 评估的 3 个层次</summary>
+    <div class="body">详见摘要。<b>常见错误：</b>只测端到端——无法定位是哪一步出错；好的最终输出可能也来自坏的轨迹（运气）。</div>
+  </details>
+  <details class="concept"><summary>LLM-as-Judge 的正确用法</summary>
+    <div class="body">不要用同一模型同时生成和判断；给 judge 明确的 rubric；让 judge 必须说理由；定期用人类标注校准。</div>
+  </details>
+  <details class="concept"><summary>Prioritization：4 个维度</summary>
+    <div class="body">Urgency / Impact / Uncertainty / Dependency。在 plan 阶段就输出 priority 字段。</div>
+  </details>
+  <details class="concept"><summary>Exploration：Agent 主动学习的三种范式</summary>
+    <div class="body">Curiosity / Hypothesis / Anomaly Detection。是未来 3-5 年 Agent 的发展方向。</div>
+  </details>
+
+  <h3><span class="icon">🏆</span>Capstone 项目（本周核心）</h3>
+  <div class="handson">
+    <b class="title">综合项目：业务团队 AI Co-pilot</b>
+    <p>把 Week 1-7 学的所有模式融合成一个生产级 Agent，目标是：<b>给业务团队（PM / 运营 / BD）用的智能助手</b>。</p>
+    <p><b>功能矩阵：</b></p>
+    <pre>
+对应模式            │ 功能
+────────────────────┼─────────────────────────────────────────
+Routing            │ 自动判断用户意图（数据查询/反馈分类/文档/数据分析）
+Tool Use + MCP     │ 封装数据查询、文档模板、通知 API 为 MCP server
+Planning           │ 复杂任务（如"分析数据 + 写复盘 + 通知团队"）自动 plan
+Multi-Agent        │ PM / Data / Comms 三角色协同
+Memory             │ 长期记住用户偏好和团队术语
+RAG                │ 内部文档 / 历史项目 知识库问答
+Reflection         │ 输出前自检（文档完整性、数据准确性）
+Guardrails         │ 防数据越权、防 prompt injection、防误发消息
+HIL                │ 高风险动作（发邮件、写库）必须人审
+Evaluation         │ 每周自动跑 50 个测试 case，追踪指标退化
+Resource-Aware     │ Haiku 路由 + Sonnet 主力 + Opus 关键 review
+    </pre>
+    <p><b>交付物：</b></p>
+    <p>① GitHub 仓库（代码 + README + 架构图）<br/>
+    ② Demo 视频 5 分钟<br/>
+    ③ 一份"我学到了什么"复盘文档<br/>
+    ④ 团队内分享 30 分钟（强烈推荐）</p>
+    <div class="stack"><span>LangGraph</span><span>MCP</span><span>Chroma</span><span>FastAPI</span><span>NeMo Guardrails</span><span>~2000 行代码</span></div>
+  </div>
+
+  <h3><span class="icon">📝</span>本周自测题（综合）</h3>
+  <div class="quiz" data-quiz="w8q1">
+    <div class="q"><span class="qnum">Q1.</span>评估一个 Agent，只测最终输出准确率有什么问题？</div>
+    <ul class="options">
+      <li data-correct="false">没问题，端到端测就够了</li>
+      <li data-correct="true">无法定位是哪一步出错；好的最终输出可能也来自坏的轨迹（运气）</li>
+      <li data-correct="false">耗时太长</li>
+      <li data-correct="false">数据隐私问题</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>Trajectory-level 评估能识别"靠运气过关"的 trace——这是改进 Agent 的关键。</div>
+  </div>
+  <div class="quiz" data-quiz="w8q2">
+    <div class="q"><span class="qnum">Q2.</span>LLM-as-Judge 最容易翻车的设置？</div>
+    <ul class="options">
+      <li data-correct="false">不给 rubric</li>
+      <li data-correct="false">不让 judge 写理由</li>
+      <li data-correct="true">用同一个模型既生成又评估</li>
+      <li data-correct="false">用 temperature 0</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：C。</b>会系统性高估自家输出。</div>
+  </div>
+  <div class="quiz" data-quiz="w8q3">
+    <div class="q"><span class="qnum">Q3.</span>下面哪个<b>不是</b> 21 模式中的核心模式？</div>
+    <ul class="options">
+      <li data-correct="false">Reflection</li>
+      <li data-correct="false">Routing</li>
+      <li data-correct="true">Token Compression</li>
+      <li data-correct="false">Prioritization</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：C。</b>Token compression 是 memory management 的子技巧，不是独立模式。</div>
+  </div>
+  <div class="quiz" data-quiz="w8q4">
+    <div class="q"><span class="qnum">Q4.</span>选择"用 Multi-Agent 还是单 Agent"的<b>第一性问题</b>是？</div>
+    <ul class="options">
+      <li data-correct="false">"Agent 越多是不是越聪明"</li>
+      <li data-correct="true">"子任务之间是否真的需要不同 system prompt / 工具集 / 权限"</li>
+      <li data-correct="false">"用什么框架最方便"</li>
+      <li data-correct="false">"老板想要 multi-agent"</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：B。</b>没有差异化就没必要分 Agent。</div>
+  </div>
+  <div class="quiz" data-quiz="w8q5">
+    <div class="q"><span class="qnum">Q5.</span>读完本书你最该记住的一句话是？</div>
+    <ul class="options">
+      <li data-correct="false">"用最新的 Agent 框架"</li>
+      <li data-correct="false">"模型越大越好"</li>
+      <li data-correct="true">"模式不是规则，是工具——根据具体场景组合，并永远测量结果"</li>
+      <li data-correct="false">"避免使用 LLM"</li>
+    </ul>
+    <button class="answer-btn" onclick="toggleAnswer(this)">查看解析</button>
+    <div class="explain"><b>答案：C。</b>作者贯穿全书的核心立场——Pattern 是 vocabulary，不是 dogma。</div>
+  </div>
+
+  <h3><span class="icon">🎓</span>结业 checklist</h3>
+  <ul class="checklist" data-week="8">
+    <li><input type="checkbox" id="w8c1"><label for="w8c1">能在白板上画出 21 个模式的关系图</label></li>
+    <li><input type="checkbox" id="w8c2"><label for="w8c2">完成至少 5 个 hands-on 项目（Week1/2/3/4/Capstone）</label></li>
+    <li><input type="checkbox" id="w8c3"><label for="w8c3">写一篇 1500+ 字的学习复盘（推荐发到个人博客或团队 Wiki）</label></li>
+    <li><input type="checkbox" id="w8c4"><label for="w8c4">能给同事讲清楚 MCP 是什么、为什么重要</label></li>
+    <li><input type="checkbox" id="w8c5"><label for="w8c5">在团队中至少给 1 次分享或带 1 个 Code Review</label></li>
+  </ul>
+
+  <div class="tip"><b>🎯 下一步学习方向：</b> 完成本书后建议追三个方向 — ① Anthropic / OpenAI 官方 cookbook 持续追新（每月 2-3 个新模式）；② 读 AutoGen、CrewAI、LangGraph 各自的 advanced docs；③ 参加一次 Agent 比赛（Kaggle / GAIA / SWE-bench）检验实战能力。</div>
+</div>
+</div>
+
+
+</div>
+<aside class="sidebar">
+  <div class="sidebar-card sb-toc">
+    <h3 class="sb-title"><span class="icon">📑</span>21 章全景图（一键直达原文）</h3>
+    <div class="toc-list">
+      <a href="https://docs.google.com/document/d/1flxKGrbnF2g8yh3F-oVD5Xx7ZumId56HbFpIiPdkqLI/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch1</span>Prompt Chaining<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1ux_n8n3T4bYndOjs1DKW5ccpC802KISdy2IWnlvYbas/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch2</span>Routing<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1XVMp4RcRkoUJTVbrP2foWZX703CUJpWkrhyFU2cfUOA/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch3</span>Parallelization<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1HXXJOQIMWowtLw4WMiSR360caDAlZPtl5dPPgvq9IT4/edit?tab=t.0#heading=h.a7nkedxjnyap" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch4</span>Reflection<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1bE4iMljhppqGY1p48gQWtZvk6MfRuJRCiba1yRykGNE/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch5</span>Tool Use<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/18vvNESEwHnVUREzIipuaDNCnNAREGqEfy9MQYC9wb4o/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch6</span>Planning<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1RZ5-2fykDQKOBx01pwfKkDe0GCs5ydca7xW9Q4wqS_M/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch7</span>Multi-Agent<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1asVTObtzIye0I9ypAztaeeI_sr_Hx2TORE02uUuqH_c/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch8</span>Memory Management<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1UHTEDCmSM1nwB-iyMoHuYzVcu_B_4KkJ2ITGGUKqo8s/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch9</span>Learning & Adaptation<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1e6XimYczKmhX9zpqEyxLFWPQgGuG0brp7Hic2sFl_qw/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch10</span>MCP<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/10ndlCB39BWjyFRWKpcoKib4vuPD1ojD-x0-ynMaf5uw/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch11</span>Goal Setting<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1C07AuMur6-infwE0viCp4QtAy_wWI-uceFm6MaYHQGk/edit?tab=t.0#heading=h.m2kk4kdjt6ir" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch12</span>Exception Handling<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1ImOZcw6yeb7a-uRBMNP1VdovYfyip4IdsAcLu9yue-0/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch13</span>Human-in-the-Loop<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1v96Oobio6xDOqbK8ejsXjmOc4Dp2uoLMo5_gfJgi-NE/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch14</span>RAG<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1H6HmUYcy5kugt5gt7Kh2Zzb8C62d5pu36RsgMNDCX24/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch15</span>A2A<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1nAN58l6JjqEJHk43126uh7xgdEblCpcbsNUHXgtBmJQ/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch16</span>Resource-Aware Opt.<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1Yt1W_hLaC6ZNgJXfT4W6NrCL4TzNVdKOX50kgpHiIq4/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch17</span>Reasoning Techniques<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1Gpc5af_okze1kprRLohP6-81e1KwL6HggjeLvxQyIuk/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch18</span>Guardrails / Safety<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1G3zOZM2ZOd0gUp5dy66FUjKMOcALh9l-JpvPxgGMm8w/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch19</span>Evaluation<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1qyXxGM2hNqW_qjXuBFxrEUeoYVO79BoW1ogKu1bfdCY/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch20</span>Prioritization<span class="ext">↗</span></a>
+      <a href="https://docs.google.com/document/d/1zeeMVTqjqRIli6G9MMWThhoQhvKqLOjJF2EHHUXLhdk/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="toc-link"><span class="ch">Ch21</span>Exploration & Discovery<span class="ext">↗</span></a>
+    </div>
+  </div>
+  <div class="sidebar-card sb-checklist">
+    <h3 class="sb-title"><span class="icon">📖</span>本周阅读 Checklist</h3>
+    <div class="sb-checklist-body" id="sbChecklistBody">
+      <div class="sidebar-checklist active" data-week-checklist="1">
+        <ul class="checklist" data-week="1">
+    <li><input type="checkbox" id="w1r1"><label for="w1r1">Introduction · "What makes an AI system an agent?"（约 20 页）</label></li>
+    <li><input type="checkbox" id="w1r2"><label for="w1r2">Chapter 1 · Prompt Chaining（12 页）</label></li>
+    <li><input type="checkbox" id="w1r3"><label for="w1r3">Chapter 2 · Routing（13 页）</label></li>
+    <li><input type="checkbox" id="w1r4"><label for="w1r4">配套 Notebook：Chapter_01 + Chapter_02</label></li>
+  </ul>
+      </div>
+      <div class="sidebar-checklist" data-week-checklist="2">
+        <ul class="checklist" data-week="2">
+    <li><input type="checkbox" id="w2r1"><label for="w2r1">Chapter 3 · Parallelization（15 页）</label></li>
+    <li><input type="checkbox" id="w2r2"><label for="w2r2">Chapter 4 · Reflection（13 页）</label></li>
+    <li><input type="checkbox" id="w2r3"><label for="w2r3">Notebook：Chapter_03 + Chapter_04</label></li>
+    <li><input type="checkbox" id="w2r4"><label for="w2r4">延伸：Self-Refine 论文（Madaan et al. 2023），15 分钟扫读 abstract + 实验图</label></li>
+  </ul>
+      </div>
+      <div class="sidebar-checklist" data-week-checklist="3">
+        <ul class="checklist" data-week="3">
+    <li><input type="checkbox" id="w3r1"><label for="w3r1">Chapter 5 · Tool Use（20 页 · 本周重点）</label></li>
+    <li><input type="checkbox" id="w3r2"><label for="w3r2">Chapter 6 · Planning（13 页）</label></li>
+    <li><input type="checkbox" id="w3r3"><label for="w3r3">Notebook：Chapter_05 + Chapter_06</label></li>
+    <li><input type="checkbox" id="w3r4"><label for="w3r4">附录 F · Under the Hood: Reasoning Engines（理解 ReAct 原理）</label></li>
+  </ul>
+      </div>
+      <div class="sidebar-checklist" data-week-checklist="4">
+        <ul class="checklist" data-week="4">
+    <li><input type="checkbox" id="w4r1"><label for="w4r1">Chapter 7 · Multi-Agent（17 页）</label></li>
+    <li><input type="checkbox" id="w4r2"><label for="w4r2">Chapter 8 · Memory Management（21 页 · 本周重点）</label></li>
+    <li><input type="checkbox" id="w4r3"><label for="w4r3">Notebook：Chapter_07 + Chapter_08</label></li>
+    <li><input type="checkbox" id="w4r4"><label for="w4r4">延伸：MemGPT 论文 + Anthropic 的 multi-agent research 博客</label></li>
+  </ul>
+      </div>
+      <div class="sidebar-checklist" data-week-checklist="5">
+        <ul class="checklist" data-week="5">
+    <li><input type="checkbox" id="w5r1"><label for="w5r1">Chapter 9 · Learning and Adaptation（12 页）</label></li>
+    <li><input type="checkbox" id="w5r2"><label for="w5r2">Chapter 10 · Model Context Protocol (MCP)（16 页 · 重点）</label></li>
+    <li><input type="checkbox" id="w5r3"><label for="w5r3">Chapter 11 · Goal Setting and Monitoring</label></li>
+    <li><input type="checkbox" id="w5r4"><label for="w5r4">实践：在本地搭一个 MCP server（Anthropic 官方 quickstart）</label></li>
+  </ul>
+      </div>
+      <div class="sidebar-checklist" data-week-checklist="6">
+        <ul class="checklist" data-week="6">
+    <li><input type="checkbox" id="w6r1"><label for="w6r1">Chapter 12 · Exception Handling and Recovery</label></li>
+    <li><input type="checkbox" id="w6r2"><label for="w6r2">Chapter 13 · Human-in-the-Loop</label></li>
+    <li><input type="checkbox" id="w6r3"><label for="w6r3">Chapter 14 · Knowledge Retrieval (RAG) · 重点</label></li>
+    <li><input type="checkbox" id="w6r4"><label for="w6r4">Notebook：Chapter_12 + 13 + 14</label></li>
+  </ul>
+      </div>
+      <div class="sidebar-checklist" data-week-checklist="7">
+        <ul class="checklist" data-week="7">
+    <li><input type="checkbox" id="w7r1"><label for="w7r1">Chapter 15 · Inter-Agent Communication (A2A)</label></li>
+    <li><input type="checkbox" id="w7r2"><label for="w7r2">Chapter 16 · Resource-Aware Optimization</label></li>
+    <li><input type="checkbox" id="w7r3"><label for="w7r3">Chapter 17 · Reasoning Techniques（重点）</label></li>
+    <li><input type="checkbox" id="w7r4"><label for="w7r4">Chapter 18 · Guardrails / Safety Patterns（重点）</label></li>
+  </ul>
+      </div>
+      <div class="sidebar-checklist" data-week-checklist="8">
+        <ul class="checklist" data-week="8">
+    <li><input type="checkbox" id="w8r1"><label for="w8r1">Chapter 19 · Evaluation and Monitoring（重点）</label></li>
+    <li><input type="checkbox" id="w8r2"><label for="w8r2">Chapter 20 · Prioritization</label></li>
+    <li><input type="checkbox" id="w8r3"><label for="w8r3">Chapter 21 · Exploration and Discovery</label></li>
+    <li><input type="checkbox" id="w8r4"><label for="w8r4">附录 A · Advanced Prompting Techniques</label></li>
+    <li><input type="checkbox" id="w8r5"><label for="w8r5">附录 C · Agentic Frameworks 横向对比</label></li>
+    <li><input type="checkbox" id="w8r6"><label for="w8r6">Conclusion + Glossary（回顾全书术语）</label></li>
+  </ul>
+      </div>
+    </div>
+  </div>
+</aside>
+</div>
+
+<footer>
+  © Agentic Design Patterns 学习门户 · 基于 Antonio Gulli 同名书籍 · 进度在你的浏览器本地保存（localStorage）<br/>
+  Made with care for 你的 8 周 Agent 学习之旅 · v2.0 公开版
+</footer>
+
+</div>
+
+<script>
+  // Tab switching
+  const tabs = document.querySelectorAll('.week-tab');
+  const contents = document.querySelectorAll('.week-content');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const wk = tab.dataset.week;
+      tabs.forEach(t => t.classList.remove('active'));
+      contents.forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelector(`.week-content[data-week="${wk}"]`).classList.add('active');
+      // sync sidebar checklist
+      document.querySelectorAll('.sidebar-checklist').forEach(sc => sc.classList.remove('active'));
+      const sbCl = document.querySelector(`.sidebar-checklist[data-week-checklist="${wk}"]`);
+      if (sbCl) sbCl.classList.add('active');
+    });
+  });
+
+  // Quiz options
+  document.querySelectorAll('.quiz .options li').forEach(li => {
+    li.addEventListener('click', (e) => {
+      const ul = li.parentElement;
+      ul.querySelectorAll('li').forEach(o => { o.classList.remove('correct','wrong'); });
+      if (li.dataset.correct === 'true') {
+        li.classList.add('correct');
+      } else {
+        li.classList.add('wrong');
+        ul.querySelectorAll('li').forEach(o => { if (o.dataset.correct === 'true') o.classList.add('correct'); });
+      }
+    });
+  });
+
+  function toggleAnswer(btn){
+    const ex = btn.nextElementSibling;
+    ex.classList.toggle('show');
+    btn.textContent = ex.classList.contains('show') ? '收起解析' : '查看解析';
+  }
+
+  // Progress persistence
+  const STORAGE_KEY = 'agentic_patterns_progress_v2';
+  function loadProgress(){
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+    catch { return {}; }
+  }
+  function saveProgress(state){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+  const state = loadProgress();
+
+  document.querySelectorAll('.checklist input[type=checkbox]').forEach(cb => {
+    if (state[cb.id]) {
+      cb.checked = true;
+      cb.parentElement.classList.add('done');
+    }
+    cb.addEventListener('change', () => {
+      state[cb.id] = cb.checked;
+      saveProgress(state);
+      cb.parentElement.classList.toggle('done', cb.checked);
+      updateProgress();
+    });
+  });
+
+  function updateProgress(){
+    const all = document.querySelectorAll('.checklist input[type=checkbox]');
+    const done = Array.from(all).filter(cb => cb.checked).length;
+    const pct = all.length ? (done / all.length) * 100 : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${done} / ${all.length} 项完成 · ${pct.toFixed(0)}%`;
+    document.querySelectorAll('.week-tab').forEach(t => {
+      const wk = t.dataset.week;
+      const wkCbs = document.querySelectorAll(`.week-content[data-week="${wk}"] .checklist input[type=checkbox]`);
+      if (wkCbs.length > 0 && Array.from(wkCbs).every(cb => cb.checked)) {
+        t.classList.add('done');
+      } else {
+        t.classList.remove('done');
+      }
+    });
+  }
+  updateProgress();
+
+  function resetProgress(){
+    if (!confirm('确定重置所有进度？此操作不可撤销。')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    document.querySelectorAll('.checklist input[type=checkbox]').forEach(cb => {
+      cb.checked = false;
+      cb.parentElement.classList.remove('done');
+    });
+    updateProgress();
+  }
+</script>
+</body>
+</html>
