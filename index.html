@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Agentic Design Patterns · 8 周深度学习门户</title>
 <meta name="description" content="A self-paced 8-week study portal for Antonio Gulli's Agentic Design Patterns, with hands-on projects and quizzes.">
+<script>
+  const savedTheme = localStorage.getItem('agentic_patterns_theme');
+  const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+  document.documentElement.dataset.theme = savedTheme || (prefersLight ? 'light' : 'dark');
+</script>
 <style>
   :root {
     --bg:#0b0e11; --bg-2:#11151b; --bg-3:#1a1f27; --bg-card:#161b22;
@@ -12,7 +17,22 @@
     --text:#e6e8eb; --text-2:#9aa4b2; --text-3:#6b7684;
     --accent:#f7a600; --accent-2:#ffcc33; --accent-soft:rgba(247,166,0,0.12);
     --green:#1fc16b; --blue:#3a8fff; --red:#ff5c5c; --purple:#a76dff;
+    --green-soft:rgba(31,193,107,0.12); --blue-soft:rgba(58,143,255,0.06); --red-soft:rgba(255,92,92,0.12); --purple-soft:rgba(167,109,255,0.05);
+    --hero-bg:linear-gradient(135deg, #11151b 0%, #1a1f27 100%);
+    --shadow:0 18px 45px rgba(0,0,0,0.18);
     --radius:10px; --radius-sm:6px;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --bg:#f7f8fb; --bg-2:#f1f4f8; --bg-3:#e8edf4; --bg-card:#ffffff;
+    --border:#d9e0ea; --border-light:#c6d0dd;
+    --text:#17202b; --text-2:#4c5b6b; --text-3:#7b8796;
+    --accent:#a86500; --accent-2:#c87900; --accent-soft:rgba(200,121,0,0.13);
+    --green:#137a45; --blue:#2563eb; --red:#c24141; --purple:#7c3aed;
+    --green-soft:rgba(19,122,69,0.11); --blue-soft:rgba(37,99,235,0.07); --red-soft:rgba(194,65,65,0.11); --purple-soft:rgba(124,58,237,0.06);
+    --hero-bg:linear-gradient(135deg, #ffffff 0%, #edf3fb 100%);
+    --shadow:0 18px 42px rgba(31,43,58,0.10);
+    color-scheme: light;
   }
   * { box-sizing:border-box; }
   html,body { background:var(--bg); color:var(--text); margin:0; padding:0;
@@ -25,8 +45,12 @@
   pre code { background:transparent; padding:0; color:var(--text); }
 
   .container { max-width:1180px; margin:0 auto; padding:32px 28px 80px; }
-  header.hero { background:linear-gradient(135deg, #11151b 0%, #1a1f27 100%); border:1px solid var(--border); border-radius:14px; padding:34px 36px; margin-bottom:28px; position:relative; overflow:hidden;}
+  header.hero { background:var(--hero-bg); border:1px solid var(--border); border-radius:14px; padding:34px 36px; margin-bottom:28px; position:relative; overflow:hidden; box-shadow:var(--shadow);}
   header.hero::before { content:""; position:absolute; right:-60px; top:-60px; width:240px; height:240px; background:radial-gradient(circle, var(--accent-soft) 0%, transparent 70%); }
+  .theme-toggle { position:absolute; top:18px; right:18px; z-index:2; display:inline-flex; align-items:center; gap:8px; height:36px; padding:0 12px; background:var(--bg-card); border:1px solid var(--border-light); border-radius:99px; color:var(--text-2); font-size:12px; font-weight:600; cursor:pointer; box-shadow:0 8px 18px rgba(0,0,0,0.10); transition:all .15s;}
+  .theme-toggle:hover { color:var(--accent); border-color:var(--accent); background:var(--accent-soft);}
+  .theme-toggle .theme-icon { width:16px; height:16px; display:inline-flex; align-items:center; justify-content:center; font-size:13px;}
+  @media (max-width:540px){ .theme-toggle { position:relative; top:auto; right:auto; margin:0 0 16px 0;} }
   .tag { display:inline-block; background:var(--accent-soft); color:var(--accent); padding:4px 10px; border-radius:99px; font-size:12px; font-weight:600; letter-spacing:.5px; margin-bottom:12px;}
   h1.title { font-size:30px; margin:0 0 6px 0; font-weight:700; letter-spacing:-.5px; }
   h1.title span.sub { color:var(--text-2); font-size:18px; font-weight:400; display:block; margin-top:4px;}
@@ -56,7 +80,7 @@
   .week-tab:hover .wk-num { color:var(--text-2);}
   .week-tab.active { background:var(--accent-soft); border-color:var(--accent); color:var(--accent);}
   .week-tab.active .wk-num { color:var(--accent); opacity:0.85;}
-  .week-tab.done { border-color:rgba(31,193,107,0.35);}
+  .week-tab.done { border-color:var(--green);}
   .week-tab.done::after { content:"✓"; position:absolute; top:5px; right:7px; color:var(--green); font-weight:700; font-size:11px;}
   .week-tab.active.done { border-color:var(--accent);}
 
@@ -87,8 +111,8 @@
   .quiz .options { list-style:none; padding:0; margin:0 0 12px 0;}
   .quiz .options li { padding:8px 12px; border:1px solid var(--border); border-radius:6px; margin-bottom:6px; cursor:pointer; font-size:13.5px; transition:all .15s;}
   .quiz .options li:hover { border-color:var(--accent); background:var(--accent-soft);}
-  .quiz .options li.correct { background:rgba(31,193,107,0.12); border-color:var(--green); color:var(--green);}
-  .quiz .options li.wrong { background:rgba(255,92,92,0.12); border-color:var(--red); color:var(--red);}
+  .quiz .options li.correct { background:var(--green-soft); border-color:var(--green); color:var(--green);}
+  .quiz .options li.wrong { background:var(--red-soft); border-color:var(--red); color:var(--red);}
   .quiz .answer-btn { background:transparent; border:1px solid var(--border-light); color:var(--text-2); padding:6px 12px; border-radius:6px; font-size:12px; cursor:pointer;}
   .quiz .answer-btn:hover { color:var(--accent); border-color:var(--accent);}
   .quiz .explain { display:none; margin-top:10px; padding:10px 12px; background:var(--bg-3); border-left:3px solid var(--accent); border-radius:4px; font-size:13px; color:var(--text-2);}
@@ -103,18 +127,18 @@
   details.concept .body { padding:0 18px 16px 36px; font-size:13.5px; color:var(--text-2); line-height:1.7;}
   details.concept .body b { color:var(--text);}
 
-  .handson { background:linear-gradient(135deg, rgba(247,166,0,0.05) 0%, rgba(167,109,255,0.05) 100%);
+  .handson { background:linear-gradient(135deg, var(--accent-soft) 0%, var(--purple-soft) 100%);
     border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:var(--radius); padding:18px 20px; margin:10px 0;}
   .handson b.title { color:var(--accent); font-size:14px; display:block; margin-bottom:6px;}
   .handson p { margin:0 0 8px 0; font-size:13.5px;}
   .handson .stack { font-size:12px; color:var(--text-3); margin-top:8px;}
   .handson .stack span { display:inline-block; background:var(--bg-3); padding:2px 8px; border-radius:4px; margin-right:6px;}
 
-  .tip { background:rgba(58,143,255,0.06); border:1px solid rgba(58,143,255,0.25); border-left:3px solid var(--blue); padding:12px 16px; border-radius:6px; margin:10px 0; font-size:13.5px; color:var(--text-2);}
+  .tip { background:var(--blue-soft); border:1px solid var(--border); border-left:3px solid var(--blue); padding:12px 16px; border-radius:6px; margin:10px 0; font-size:13.5px; color:var(--text-2);}
   .tip b { color:var(--blue); }
 
   /* Reading source card */
-  .source { background:linear-gradient(135deg, rgba(58,143,255,0.04) 0%, rgba(31,193,107,0.04) 100%);
+  .source { background:linear-gradient(135deg, var(--blue-soft) 0%, var(--green-soft) 100%);
     border:1px solid var(--border); border-left:4px solid var(--blue); border-radius:var(--radius); padding:16px 20px; margin:10px 0;}
   .source b.ch { color:var(--blue); font-size:13px; font-weight:700; display:block; margin-bottom:6px;}
   .source .anchor { font-size:12.5px; color:var(--text-3); margin:6px 0;}
@@ -142,7 +166,7 @@
   .reset-btn:hover { color:var(--red); border-color:var(--red);}
 
   /* Deep summary collapsible (Ch15) */
-  details.deep-summary { border:1px solid var(--border); border-left:4px solid var(--green); border-radius:var(--radius); margin:10px 0; background:linear-gradient(135deg, rgba(31,193,107,0.04) 0%, rgba(58,143,255,0.04) 100%); overflow:hidden;}
+  details.deep-summary { border:1px solid var(--border); border-left:4px solid var(--green); border-radius:var(--radius); margin:10px 0; background:linear-gradient(135deg, var(--green-soft) 0%, var(--blue-soft) 100%); overflow:hidden;}
   details.deep-summary summary { padding:12px 18px; cursor:pointer; font-weight:600; font-size:14px; color:var(--green); list-style:none; display:flex; align-items:center; gap:10px;}
   details.deep-summary summary::-webkit-details-marker { display:none;}
   details.deep-summary summary::before { content:"▸"; color:var(--green); transition:transform .2s; display:inline-block;}
@@ -194,6 +218,10 @@
 
 <!-- HERO -->
 <header class="hero">
+  <button class="theme-toggle" type="button" id="themeToggle" aria-label="切换白天或夜间模式">
+    <span class="theme-icon" aria-hidden="true">☀</span>
+    <span class="theme-label">白天模式</span>
+  </button>
   <span class="tag">8 周深度学习计划 · 动手构建 Agent</span>
   <h1 class="title">Agentic Design Patterns
     <span class="sub">A Hands-On Guide to Building Intelligent Systems · Antonio Gulli</span>
@@ -2277,6 +2305,27 @@ Resource-Aware     │ Haiku 路由 + Sonnet 主力 + Opus 关键 review
 </div>
 
 <script>
+  // Theme switching
+  const THEME_KEY = 'agentic_patterns_theme';
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = themeToggle.querySelector('.theme-icon');
+  const themeLabel = themeToggle.querySelector('.theme-label');
+
+  function syncThemeToggle(){
+    const isLight = document.documentElement.dataset.theme === 'light';
+    themeIcon.textContent = isLight ? '☾' : '☀';
+    themeLabel.textContent = isLight ? '夜间模式' : '白天模式';
+    themeToggle.setAttribute('aria-pressed', String(isLight));
+  }
+
+  themeToggle.addEventListener('click', () => {
+    const nextTheme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = nextTheme;
+    localStorage.setItem(THEME_KEY, nextTheme);
+    syncThemeToggle();
+  });
+  syncThemeToggle();
+
   // Tab switching
   const tabs = document.querySelectorAll('.week-tab');
   const contents = document.querySelectorAll('.week-content');
